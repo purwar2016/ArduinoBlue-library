@@ -11,7 +11,7 @@ const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
 
 // variables
-int throttle, steering;
+int throttle, steering, prevMillis;
 char button;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
@@ -19,6 +19,7 @@ MobileBLE phone(bluetooth); // pass reference of bluetooth object to MobileBLE.
 
 void setup() {
     // put your setup code here, to run once:
+    Serial.begin(9600);
 
     // Start bluetooth serial at 9600 bps
     bluetooth.begin(9600);
@@ -26,6 +27,8 @@ void setup() {
     delay(100);
 
     Serial.println("setup complete");
+
+    prevMillis = millis();
 }
 
 void loop() {
@@ -40,14 +43,24 @@ void loop() {
     // throttle and steering values go from 0 to 99.
     throttle = phone.getThrottle();
     steering = phone.getSteering();
-    button = phone.getButton();
 
-    Serial.println("----------------------------");
-    Serial.print("Throttle: ");
-    Serial.println(throttle);
-    Serial.print("Steering: ");
-    Serial.println(steering);
-    Serial.print("Button: ");
-    Serial.println(button);
+    if (button) {
+        // display button data whenever its pressed
+        // if button is not NULL
+        Serial.print("Button: ");
+        Serial.println(button);
+    }
+
+    if (abs(millis() - prevMillis) > 1000) {
+        // display steering data every half second
+
+        Serial.println("----------------------------");
+        Serial.print("Throttle: ");
+        Serial.println(throttle);
+        Serial.print("Steering: ");
+        Serial.println(steering);
+
+        prevMillis = millis();
+    }
 
 }

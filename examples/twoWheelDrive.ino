@@ -191,7 +191,7 @@ void loop() {
     // handle any button press
     if (button) {
         // if button is not NULL
-        handleButton(phone.getButton());
+        handleButton(button);
     }
 
 }

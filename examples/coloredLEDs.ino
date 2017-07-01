@@ -8,6 +8,8 @@
 
 
 // pins
+const int BLUETOOTH_TX = 8;
+const int BLUETOOTH_RX = 7;
 const int LED_RED = 2;
 const int LED_GREEN = 3;
 const int LED_BLUE = 4;
@@ -56,7 +58,7 @@ void loop() {
     // handle any button press
     if (button) {
         // if button is not NULL
-        switch (btn) {
+        switch (button) {
             case 'A':
                 buttonSwitch(LED_RED);
                 break;
