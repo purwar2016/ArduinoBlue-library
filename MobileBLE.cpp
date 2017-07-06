@@ -35,6 +35,12 @@ int MobileBLE::checkBluetooth() {
             _button = (char)_signal[0];
             deleteElements();
         }
+        else if (input == 253) {
+            // end of transmission for slider data
+            _sliderId = (char)_signal[0];
+            _sliderVal = _signal[1];
+            deleteElements();
+        }
     }
 }
 
@@ -55,6 +61,18 @@ char MobileBLE::getButton() {
     char btn = _button;
     _button = NULL;
     return btn;
+}
+
+char MobileBLE::getSliderId() {
+    char id = _sliderId;
+    _sliderId = NULL;
+    return id;
+}
+
+int MobileBLE::getSliderVal() {
+    int val = _sliderVal;
+    _sliderVal = NULL;
+    return val;
 }
 
 int MobileBLE::getThrottle() {

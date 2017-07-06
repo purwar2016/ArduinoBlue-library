@@ -19,6 +19,8 @@ public:
     MobileBLE(Stream &output);
     void begin();
     char getButton();
+    char getSliderId();
+    int getSliderVal();
     int getThrottle();
     int getSteering();
     int checkBluetooth();
@@ -30,6 +32,8 @@ private:
     int _signalLength = 0;
     int _throttle = DEFAULT_STEERING;
     int _steering = DEFAULT_THROTTLE;
+    int _sliderVal;
+    char _sliderId;
     char _button;
 };
 
