@@ -102,7 +102,7 @@ void goBackward(int throttle, int steering) {
     if (abs(steering - CONTROL_MID) > TURN_THRESHOLD) {
         int i;
         if (steering > CONTROL_MID) {
-            // turn right4
+            // turn right
             int mappedSteering = map(steering, CONTROL_MID, CONTROL_MAX, CONTROL_MIN, CONTROL_MID);
             rightThrottle = throttle*((double)(CONTROL_MID - mappedSteering) / CONTROL_MID);
             leftThrottle = throttle;
