@@ -1,7 +1,7 @@
 /*
- * Sample code to control a two wheel drive's robot movement and colored LEDs.
- * Note that the LEDs are optional. You can program the buttons to do whatever you like :)
- */
+* Sample code to control a two wheel drive's robot movement and brightness of LEDs
+* Note that the LEDs are optional. You can program the buttons to do whatever you like :)
+*/
 
 #include <SoftwareSerial.h>
 #include <MobileBLE.h>
@@ -12,15 +12,15 @@
 // pins
 const int BLUETOOTH_TX = 8;  // TX-O pin of bluetooth mate, Arduino D2
 const int BLUETOOTH_RX = 7;  // RX-I pin of bluetooth mate, Arduino D3
-const int LEFT_EN = 6; // D6
-const int RIGHT_EN = 5; // D5
+const int LEFT_EN = 6; // PWM pin required
+const int RIGHT_EN = 5; // PWM pin required
 const int A_1 = 13;
 const int A_2 = 12;
-const int A_3 = 11;
-const int A_4 = 10;
-const int LED_RED = 2;
-const int LED_GREEN = 3;
-const int LED_BLUE = 4;
+const int A_3 = 4;
+const int A_4 = 2;
+const int LED_RED = 3;  // PWM pin required for brightness control
+const int LED_GREEN = 10; // PWM pin required for brightness control
+const int LED_BLUE = 11; // PWM pin required for brightness control
 
 // ranges
 const int CONTROL_MIN = 0;
@@ -150,6 +150,21 @@ void buttonSwitch(int pin) {
     }
 }
 
+void handleSlider(char sliderId, int sliderVal) {
+    int pwm = map(sliderVal, 0, 200, 0, 255);
+    switch (sliderId) {
+        case 'A':
+            analogWrite(LED_RED, pwm);
+            break;
+        case 'B':
+            analogWrite(LED_GREEN, pwm);
+            break;
+        case 'C':
+            analogWrite(LED_BLUE, pwm);
+            break;
+    }
+}
+
 void setup() {
     // the setup function runs once when you press reset or power the board
 
@@ -185,6 +200,9 @@ void loop() {
     // will return NULL, which in layman's terms means nothing.
     char button = phone.getButton();
 
+    char sliderId = phone.getSliderId();
+    int sliderVal = phone.getSliderVal(); // slider val goes from 0 to 200
+
     // move the robot
     move(throttle, steering);
 
@@ -192,6 +210,11 @@ void loop() {
     if (button) {
         // if button is not NULL
         handleButton(button);
+    }
+
+    // handle any slider changes
+    if (sliderId) {
+        handleSlider(sliderId, sliderVal);
     }
 
 }

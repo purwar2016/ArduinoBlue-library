@@ -1,6 +1,6 @@
 /*
- * Prints the throttle, steering, and button values to Serial output.
- */
+* Prints the throttle, steering, button, and slider values to Serial output.
+*/
 
 #include <SoftwareSerial.h>
 #include <MobileBLE.h>
@@ -11,8 +11,8 @@ const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
 
 // variables
-int throttle, steering, prevMillis;
-char button;
+int throttle, steering, prevMillis, sliderVal;
+char button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 MobileBLE phone(bluetooth); // pass reference of bluetooth object to MobileBLE.
@@ -44,11 +44,27 @@ void loop() {
     throttle = phone.getThrottle();
     steering = phone.getSteering();
 
+    // slider ID is an ASCII character
+    sliderId = phone.getSliderId();
+
+    // slider value goes from 0 to 200
+    sliderVal = phone.getSliderVal();
+
+
+
     if (button) {
         // display button data whenever its pressed
         // if button is not NULL
         Serial.print("Button: ");
         Serial.println(button);
+    }
+
+    if (sliderId) {
+        // display slider data when slider moves
+        Serial.print("Slider ID: ");
+        Serial.print(sliderId);
+        Serial.print("\tValue: ");
+        Serial.println(sliderVal);
     }
 
     if (abs(millis() - prevMillis) > 1000) {

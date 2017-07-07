@@ -10,9 +10,10 @@
 // pins
 const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
-const int LED_RED = 2;
-const int LED_GREEN = 3;
-const int LED_BLUE = 4;
+const int LED_RED = 3;  // PWM pin required for brightness control
+const int LED_GREEN = 10; // PWM pin required for brightness control
+const int LED_BLUE = 11; // PWM pin required for brightness control
+
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 MobileBLE phone(bluetooth);
@@ -30,6 +31,9 @@ void buttonSwitch(int pin) {
 
 void setup() {
     // the setup function runs once when you press reset or power the board
+
+    // check for any incoming bluetooth signal
+    phone.checkBluetooth();
 
     // Begin the serial monitor at 9600bps
     Serial.begin(9600);
