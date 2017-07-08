@@ -58,32 +58,27 @@ void MobileBLE::deleteElements() {
 
 
 char MobileBLE::getButton() {
-    checkBluetooth();
     char btn = _button;
     _button = NULL;
     return btn;
 }
 
 char MobileBLE::getSliderId() {
-    checkBluetooth();
     char id = _sliderId;
     _sliderId = NULL;
     return id;
 }
 
 int MobileBLE::getSliderVal() {
-    checkBluetooth();
     int val = _sliderVal;
     _sliderVal = NULL;
     return val;
 }
 
 int MobileBLE::getThrottle() {
-    checkBluetooth();
     return _throttle;
 }
 
 int MobileBLE::getSteering() {
-    checkBluetooth();
     return _steering;
 }
