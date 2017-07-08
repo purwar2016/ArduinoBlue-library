@@ -9,6 +9,7 @@ Contact: jaean37@gmail.com
 #include "MobileBLE.h"
 #include "Arduino.h"
 
+// TODO: add getBluetooth in all getters?
 
 MobileBLE::MobileBLE(Stream &output) :
         _bluetooth(output)
