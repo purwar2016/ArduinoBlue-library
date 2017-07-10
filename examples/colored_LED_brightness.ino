@@ -3,7 +3,7 @@
 */
 
 #include <SoftwareSerial.h>
-#include <MobileBLE.h>
+#include <ArduinoCommander.h>
 
 
 // pins
@@ -14,7 +14,7 @@ const int LED_GREEN = 10; // PWM pin required for brightness control
 const int LED_BLUE = 11; // PWM pin required for brightness control
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-MobileBLE phone(bluetooth);
+ArduinoCommander phone(bluetooth);
 
 
 

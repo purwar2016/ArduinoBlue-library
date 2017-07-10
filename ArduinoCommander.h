@@ -1,22 +1,22 @@
 
 /*
-Name: MobileBLE.cpp
+Name: ArduinoCommander.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#ifndef _MobileBLE_h
-#define _MobileBLE_h
+#ifndef _ArduinoCommander_h
+#define _ArduinoCommander_h
 #include <Arduino.h>
 
 const int DEFAULT_STEERING = 49;
 const int DEFAULT_THROTTLE = 0;
 
-class MobileBLE
+class ArduinoCommander
 {
 public:
-    MobileBLE(Stream &output);
+    ArduinoCommander(Stream &output);
     void begin();
     char getButton();
     char getSliderId();

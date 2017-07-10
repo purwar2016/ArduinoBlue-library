@@ -3,7 +3,7 @@
 */
 
 #include <SoftwareSerial.h>
-#include <MobileBLE.h>
+#include <ArduinoCommander.h>
 
 
 // CONSTANTS
@@ -37,7 +37,7 @@ const int RIGHT_OFFSET = 0;
 const int LEFT_OFFSET = 0;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-MobileBLE phone(bluetooth);
+ArduinoCommander phone(bluetooth);
 
 void move(int throttle, int steering) {
     // moves the robot based on the throttle and steering variables

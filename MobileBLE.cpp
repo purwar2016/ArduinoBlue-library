@@ -1,23 +1,23 @@
 
 /*
-Name: MobileBLE.cpp
+Name: ArduinoCommander.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#include "MobileBLE.h"
+#include "ArduinoCommander.h"
 #include "Arduino.h"
 
 // TODO: add getBluetooth in all getters?
 
-MobileBLE::MobileBLE(Stream &output) :
+ArduinoCommander::ArduinoCommander(Stream &output) :
         _bluetooth(output)
 {
 
 }
 
-int MobileBLE::checkBluetooth() {
+int ArduinoCommander::checkBluetooth() {
     while (_bluetooth.available() > 0) {
         // while bluetooth singal is available
 
@@ -45,12 +45,12 @@ int MobileBLE::checkBluetooth() {
     }
 }
 
-void MobileBLE::push(int elem) {
+void ArduinoCommander::push(int elem) {
     _signal[_signalLength] = elem;
     _signalLength++;
 }
 
-void MobileBLE::deleteElements() {
+void ArduinoCommander::deleteElements() {
     for (int i = 0; i < _signalLength; i++) {
         _signal[i] = NULL;
     }
@@ -58,28 +58,28 @@ void MobileBLE::deleteElements() {
 }
 
 
-char MobileBLE::getButton() {
+char ArduinoCommander::getButton() {
     char btn = _button;
     _button = NULL;
     return btn;
 }
 
-char MobileBLE::getSliderId() {
+char ArduinoCommander::getSliderId() {
     char id = _sliderId;
     _sliderId = NULL;
     return id;
 }
 
-int MobileBLE::getSliderVal() {
+int ArduinoCommander::getSliderVal() {
     int val = _sliderVal;
     _sliderVal = NULL;
     return val;
 }
 
-int MobileBLE::getThrottle() {
+int ArduinoCommander::getThrottle() {
     return _throttle;
 }
 
-int MobileBLE::getSteering() {
+int ArduinoCommander::getSteering() {
     return _steering;
 }

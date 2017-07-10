@@ -3,7 +3,7 @@
 */
 
 #include <SoftwareSerial.h>
-#include <MobileBLE.h>
+#include <ArduinoCommander.h>
 
 
 // PINS
@@ -15,7 +15,7 @@ int throttle, steering, prevMillis, sliderVal;
 char button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-MobileBLE phone(bluetooth); // pass reference of bluetooth object to MobileBLE.
+ArduinoCommander phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
 
 void setup() {
     // put your setup code here, to run once:
