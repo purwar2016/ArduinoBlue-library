@@ -56,6 +56,7 @@ void ArduinoCommander::deleteElements() {
     _signalLength = 0;
 }
 
+
 char ArduinoCommander::getButton() {
     char btn = _button;
     _button = NULL;
@@ -80,8 +81,4 @@ int ArduinoCommander::getThrottle() {
 
 int ArduinoCommander::getSteering() {
     return _steering;
-}
-
-void ArduinoCommander::sendMsg(String msg) {
-    _bluetooth.print(msg);
 }

@@ -1,3 +1,4 @@
+
 /*
 Name: ArduinoCommander.cpp
 Created: 6/28/2017 11:00:39 AM
@@ -10,7 +11,7 @@ Contact: jaean37@gmail.com
 #include <Arduino.h>
 
 const int DEFAULT_STEERING = 49;
-const int DEFAULT_THROTTLE = 49;
+const int DEFAULT_THROTTLE = 0;
 
 class ArduinoCommander
 {
@@ -22,19 +23,22 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
+    char getTextId();
+    char* getText();
     int checkBluetooth();
     void push(int elem);
     void deleteElements();
-    void sendMsg(String msg);
 private:
     Stream &_bluetooth;
-    int _signal[10];
+    int _signal[25];
     int _signalLength = 0;
     int _throttle = DEFAULT_STEERING;
     int _steering = DEFAULT_THROTTLE;
     int _sliderVal;
     char _sliderId;
     char _button;
+    char _text[20];
+    char _textId;
 };
 
 #endif
