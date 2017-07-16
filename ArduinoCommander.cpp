@@ -29,11 +29,11 @@ int ArduinoCommander::checkBluetooth() {
             // START of transmission for text data
             _text = _bluetooth.readString();
 
-            if (_bluetooth.available() > 0) {
-                checkBluetooth();
-            }
+            delay(100);
 
-            return;
+            _bluetooth.print("¶");
+
+            deleteElements();
         }
 
         push(input);
