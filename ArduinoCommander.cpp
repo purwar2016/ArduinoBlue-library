@@ -22,6 +22,20 @@ int ArduinoCommander::checkBluetooth() {
 
         int input = _bluetooth.read();
 
+        // I know nasty fix, but there is a very strange bug that causes it to not work if
+        // push(input) is called and this is called. It's most likely something to do with timing.
+        // I'm using an integer array for driving, button, and slider data because Arduino is slow with strings.
+        if (input == 252) {
+            // START of transmission for text data
+            _text = _bluetooth.readString();
+
+            if (_bluetooth.available() > 0) {
+                checkBluetooth();
+            }
+
+            return;
+        }
+
         push(input);
 
         if (input == 254) {
@@ -84,4 +98,10 @@ int ArduinoCommander::getSteering() {
 
 void ArduinoCommander::sendMsg(String msg) {
     _bluetooth.print(msg);
+}
+
+String ArduinoCommander::getText() {
+    String ret = _text;
+    _text = "";
+    return ret;
 }

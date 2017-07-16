@@ -40,6 +40,10 @@ void loop() {
     // this button value is the ASCII character you press on the Command page of the app.
     button = phone.getButton();
 
+    // Returns the text data sent from the phone. After it returns the latest data, empty string "" is sent in subsequent
+    // calls until text data is sent again.
+    String str = phone.getText();
+
     // throttle and steering values go from 0 to 99.
     throttle = phone.getThrottle();
     steering = phone.getSteering();
@@ -77,6 +81,21 @@ void loop() {
         Serial.println(steering);
 
         prevMillis = millis();
+    }
+
+    if (str != "") {
+        Serial.print(str);
+        Serial.print("\n");
+    }
+
+
+    // Send string from serial command line to the phone. This will alert the user.
+    if (Serial.available()) {
+        Serial.write("usb: ");
+        String str = Serial.readString();
+        phone.sendMsg(str);
+        Serial.print(str);
+        Serial.write('\n');
     }
 
 }

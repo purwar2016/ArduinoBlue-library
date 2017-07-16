@@ -26,6 +26,7 @@ public:
     void push(int elem);
     void deleteElements();
     void sendMsg(String msg);
+    String getText();
 private:
     Stream &_bluetooth;
     int _signal[10];
@@ -35,6 +36,7 @@ private:
     int _sliderVal;
     char _sliderId;
     char _button;
+    String _text;
 };
 
 #endif
