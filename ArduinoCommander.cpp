@@ -31,8 +31,6 @@ bool ArduinoCommander::checkBluetooth() {
             // START of transmission for text data
             _text = _bluetooth.readString();
 
-            delay(100);
-
             _bluetooth.print("¶");
 
             deleteElements();
