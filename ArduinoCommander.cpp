@@ -6,9 +6,7 @@ Contact: jaean37@gmail.com
 */
 
 #include "ArduinoCommander.h"
-#include "Arduino.h"
-
-// TODO: add getBluetooth in all getters?
+#include <Arduino.h>
 
 ArduinoCommander::ArduinoCommander(Stream &output) :
         _bluetooth(output)
@@ -16,8 +14,12 @@ ArduinoCommander::ArduinoCommander(Stream &output) :
 
 }
 
-int ArduinoCommander::checkBluetooth() {
+bool ArduinoCommander::checkBluetooth() {
+
+    bool dataRead = _bluetooth.available() > 0;
+
     while (_bluetooth.available() > 0) {
+
         // while bluetooth singal is available
 
         int input = _bluetooth.read();
@@ -56,6 +58,9 @@ int ArduinoCommander::checkBluetooth() {
             deleteElements();
         }
     }
+
+    return dataRead;
+
 }
 
 void ArduinoCommander::push(int elem) {
@@ -71,12 +76,14 @@ void ArduinoCommander::deleteElements() {
 }
 
 char ArduinoCommander::getButton() {
+    checkBluetooth();
     char btn = _button;
     _button = NULL;
     return btn;
 }
 
 char ArduinoCommander::getSliderId() {
+    checkBluetooth();
     char id = _sliderId;
     _sliderId = NULL;
     return id;
@@ -89,10 +96,12 @@ int ArduinoCommander::getSliderVal() {
 }
 
 int ArduinoCommander::getThrottle() {
+    checkBluetooth();
     return _throttle;
 }
 
 int ArduinoCommander::getSteering() {
+    checkBluetooth();
     return _steering;
 }
 
@@ -101,6 +110,7 @@ void ArduinoCommander::sendMsg(String msg) {
 }
 
 String ArduinoCommander::getText() {
+    checkBluetooth();
     String ret = _text;
     _text = "";
     return ret;

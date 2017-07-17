@@ -22,7 +22,7 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
-    int checkBluetooth();
+    bool checkBluetooth();
     void push(int elem);
     void deleteElements();
     void sendMsg(String msg);
