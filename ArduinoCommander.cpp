@@ -107,6 +107,29 @@ void ArduinoCommander::sendMsg(String msg) {
     _bluetooth.print(msg);
 }
 
+bool ArduinoCommander::isConnected() {
+
+    _bluetooth.print("~");
+
+    unsigned int prevMillis = millis();
+
+    // check for incoming signal for 4 seconds
+    while (_bluetooth.available() <= 0) {
+        if (abs(millis() - prevMillis) < 4000) {
+           return false;
+        }
+    }
+
+    if ((char)_bluetooth.read() == '~') {
+        // if the first reading is the : symbol then it's connected to the app.
+        return true;
+    }
+
+    // if not then perhaps it's connected to something else.
+    return false;
+
+}
+
 String ArduinoCommander::getText() {
     checkBluetooth();
     String ret = _text;

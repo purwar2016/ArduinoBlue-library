@@ -23,6 +23,7 @@ public:
     int getThrottle();
     int getSteering();
     bool checkBluetooth();
+    bool isConnected();
     void push(int elem);
     void deleteElements();
     void sendMsg(String msg);
