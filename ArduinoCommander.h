@@ -22,6 +22,8 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
+    char (&getMoveCommands())[200];
+    bool isPathAvailable();
     bool checkBluetooth();
     bool isConnected();
     void push(int elem);
@@ -30,6 +32,8 @@ public:
     String getText();
 private:
     Stream &_bluetooth;
+    char _moveCommands[200];
+    bool _pathAvailable = false;
     int _signal[10];
     int _signalLength = 0;
     int _throttle = DEFAULT_STEERING;
@@ -37,6 +41,7 @@ private:
     int _sliderVal;
     char _sliderId;
     char _button;
+    void _readMoveCommands();
     String _text;
 };
 

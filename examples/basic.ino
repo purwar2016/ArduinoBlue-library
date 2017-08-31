@@ -34,9 +34,6 @@ void setup() {
 void loop() {
     // put your main code here, to run repeatedly:
 
-    // check for any incoming bluetooth signal
-    phone.checkBluetooth();
-
     // this button value is the ASCII character you press on the Command page of the app.
     button = phone.getButton();
 

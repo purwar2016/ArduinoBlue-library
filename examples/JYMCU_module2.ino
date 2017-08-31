@@ -24,7 +24,7 @@ long bauds[] = {
 };
 
 bool detectBleBaudRate() {
-    Serial.println("Detecting BLE baud rate:");
+    /*Serial.println("Detecting BLE baud rate:");
     for (int i = 0; i<(sizeof(bauds) / sizeof(long)); i++) {
         Serial.write("Checking ");
         long cur_baud = bauds[i];
@@ -43,38 +43,47 @@ bool detectBleBaudRate() {
             Serial1.end();
         }
     }
-    return false;
+    return false;*/
 }
 
 void setup() {
     // init
-    Serial.begin(115200);  // USB (choose 115200 in terminal)
+    Serial.begin(9600);  // USB (choose 115200 in terminal)
 
-    if (detectBleBaudRate())
-        Serial.write("Ready, type AT commands\n\n");
-    else
-        Serial.write("Not ready. Halt");
+    Serial1.begin(9600);
+    Serial1.write("AT");
+    Serial1.flush();
+
+    Serial.write("Ready, type AT commands\n\n");
 
     pinMode(led, OUTPUT);
 
     prevMillis = millis();
 }
-
+String command = "";
 void loop() {
     // read from BLE (HM-10)
-    if (Serial1.available()) {
+    /*if (Serial1.available()) {
         Serial.write("ble: ");
         String str = Serial1.readString();
         Serial.print(str);
         Serial.write('\n');
+    } */
+
+    if (Serial1.available() > 0) {
+        while(Serial1.available() > 0) { // While there is more to be read, keep reading.
+            // Serial1.read();
+            Serial.println(Serial1.readString());
+        }
+        Serial.println();
+        command = ""; // No repeats
     }
 
     // read from USB (Arduino Terminal)
     if (Serial.available()) {
         Serial.write("usb: ");
         String str = Serial.readString();
-        Serial1.print(str);
-        Serial.print(str);
-        Serial.write('\n');
+        Serial1.println(str);
+        Serial.println(str);
     }
 }
