@@ -9,14 +9,10 @@ Contact: jaean37@gmail.com
 #include <Arduino.h>
 
 #define START_STR_TRANSMISSION 252
-#define START_MOVE_COMMANDS_TRANSMISSION 251
-#define END_MOVE_COMMANDS_TRANSMISSION 250
 #define END_ORIENTATION_TRANSMISSION 254
 #define END_BUTTON_TRANMISSION 255
 #define END_SLIDER_TRANMISSION 253
-
 #define STR_READ_FINISH_FEEDBACK "¶"
-#define MOVEMENT_DONE_FEEDBACK "¶"
 
 ArduinoCommander::ArduinoCommander(Stream &output) :
         _bluetooth(output)
@@ -40,11 +36,6 @@ bool ArduinoCommander::checkBluetooth() {
             _bluetooth.print(STR_READ_FINISH_FEEDBACK);
 
             deleteElements();
-        }
-
-        if (input == START_MOVE_COMMANDS_TRANSMISSION) {
-            // Start of transmission for movement command array.
-            _readMoveCommands();
         }
 
         push(input);
@@ -120,13 +111,17 @@ void ArduinoCommander::sendMsg(String msg) {
 
 bool ArduinoCommander::isConnected() {
 
+    while (_bluetooth.available() > 0) {
+        _bluetooth.read();
+    }
+
     _bluetooth.print("~");
 
     unsigned int prevMillis = millis();
 
-    // check for incoming signal for 4 seconds
+    // check for incoming signal for 1 seconds
     while (_bluetooth.available() <= 0) {
-        if (abs(millis() - prevMillis) < 4000) {
+        if (millis() - prevMillis > 1000) {
             return false;
         }
     }
@@ -136,7 +131,7 @@ bool ArduinoCommander::isConnected() {
         return true;
     }
 
-    // if not then perhaps it's connected to something else.
+    // if not then it's not connected to ArduinoCommander app.
     return false;
 
 }

@@ -85,6 +85,20 @@ void loop() {
         Serial.print("\n");
     }
 
+    // todo: test this
+    if (abs(millis() - prevMillis) > 1000) {
+        // display steering data every half second
+
+        if (phone.isConnected()) {
+            Serial.println("Connected");
+        }
+        else {
+            Serial.println("not connected");
+        }
+
+        prevMillis = millis();
+    }
+
     // Send string from serial command line to the phone. This will alert the user.
     if (Serial.available()) {
         String str = Serial.readString();

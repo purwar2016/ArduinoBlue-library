@@ -7,8 +7,9 @@
 
 
 // PINS
-const int BLUETOOTH_TX = 8;
-const int BLUETOOTH_RX = 7;
+#define BLUETOOTH_TX 8
+#define BLUETOOTH_RX 7
+
 
 // variables
 int throttle, steering, prevMillis, sliderVal;
@@ -18,7 +19,8 @@ SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 ArduinoCommander phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
 
 void setup() {
-    // put your setup code here, to run once:
+
+    // begin serial monitor at 9600 bps (optional)
     Serial.begin(9600);
 
     // Start bluetooth serial at 9600 bps
@@ -28,27 +30,28 @@ void setup() {
 
     Serial.println("setup complete");
 
-    prevMillis = millis();
+    while (!phone.isConnected()) {
+        Serial.println("Waiting for connection");
+        delay(2000);
+    }
+
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
-
-    // check for any incoming bluetooth signal
-    phone.checkBluetooth();
 
     // this button value is the ASCII character you press on the Command page of the app.
     button = phone.getButton();
 
-    // Returns the text data sent from the phone. After it returns the latest data, empty string "" is sent in subsequent
-    // calls until text data is sent again.
+    // Returns the text data sent from the phone.
+    // After it returns the latest data,
+    // empty string "" is sent in subsequent calls until text data is sent again.
     String str = phone.getText();
 
     // throttle and steering values go from 0 to 99.
     throttle = phone.getThrottle();
     steering = phone.getSteering();
 
-    // slider ID is an ASCII character
+    // slider ID is an ASCII character. Returns null if there was no slider update.
     sliderId = phone.getSliderId();
 
     // slider value goes from 0 to 200
@@ -64,6 +67,7 @@ void loop() {
     }
 
     if (sliderId) {
+        // if sliderId is not NULL
         // display slider data when slider moves
         Serial.print("Slider ID: ");
         Serial.print(sliderId);
