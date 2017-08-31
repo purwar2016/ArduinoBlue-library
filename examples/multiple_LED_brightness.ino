@@ -1,17 +1,17 @@
 /*
-* Sample code to control the brightness of multiple LEDs
-*/
+ * Sample code to control the brightness of multiple LED.
+ */
 
 #include <SoftwareSerial.h>
 #include <ArduinoCommander.h>
 
 
 // pins
-const int BLUETOOTH_TX = 8;  // TX-O pin of bluetooth mate, Arduino D2
-const int BLUETOOTH_RX = 7;  // RX-I pin of bluetooth mate, Arduino D3
-const int LED_RED = 3;  // PWM pin required for brightness control
-const int LED_GREEN = 10; // PWM pin required for brightness control
-const int LED_BLUE = 11; // PWM pin required for brightness control
+#define BLUETOOTH_TX 8  // Arduino digital pin -> HM 10 TX
+#define BLUETOOTH_RX 7  // Arduino digital pin -> HM 10 RX
+#define LED_RED      3  // PWM pin required for brightness control
+#define LED_GREEN    10 // PWM pin required for brightness control
+#define LED_BLUE     11 // PWM pin required for brightness control
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 ArduinoCommander phone(bluetooth);
@@ -19,8 +19,6 @@ ArduinoCommander phone(bluetooth);
 
 
 void setup() {
-    // the setup function runs once when you press reset or power the board
-
     // Begin the serial monitor at 9600bps
     Serial.begin(9600);
 
@@ -38,10 +36,6 @@ void setup() {
 }
 
 void loop() {
-    // the loop function runs over and over again until power down or reset
-
-    // check for any incoming bluetooth signal
-    phone.checkBluetooth();
 
     // slider ID is an ASCII character
     char sliderId = phone.getSliderId();

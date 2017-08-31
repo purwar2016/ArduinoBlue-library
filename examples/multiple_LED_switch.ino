@@ -1,6 +1,5 @@
 /*
- * Sample code to switch on/off colored LEDs.
- * You can program the buttons to do whatever you like :)
+ * Sample code to switch on/off multiple LED
  */
 
 #include <SoftwareSerial.h>
@@ -8,11 +7,11 @@
 
 
 // pins
-const int BLUETOOTH_TX = 8;
-const int BLUETOOTH_RX = 7;
-const int LED_RED = 3;  // PWM pin required for brightness control
-const int LED_GREEN = 10; // PWM pin required for brightness control
-const int LED_BLUE = 11; // PWM pin required for brightness control
+#define BLUETOOTH_TX 8 // Arduino digital pin -> HM 10 TX
+#define BLUETOOTH_RX 7 // Arduino digital pin -> HM 10 RX
+#define LED_RED 3      // PWM pin required for brightness control
+#define LED_GREEN 10   // PWM pin required for brightness control
+#define LED_BLUE 11    // PWM pin required for brightness control
 
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);

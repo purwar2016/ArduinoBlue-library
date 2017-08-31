@@ -1,14 +1,15 @@
 /*
-* Prints the throttle, steering, button, and slider values to Serial output.
-*/
+ * Prints the throttle, steering, button, and slider values to Serial output.
+ * Sends serial monitor input as a popup on the phone.
+ */
 
 #include <SoftwareSerial.h>
 #include <ArduinoCommander.h>
 
 
 // PINS
-#define BLUETOOTH_TX 8
-#define BLUETOOTH_RX 7
+#define BLUETOOTH_TX 8 // Arduino digital pin -> HM 10 TX
+#define BLUETOOTH_RX 7 // Arduino digital pin -> HM 10 RX
 
 
 // variables
@@ -31,6 +32,9 @@ void setup() {
     Serial.println("setup complete");
 
     while (!phone.isConnected()) {
+        // while the bluetooth module is not connected to the App.
+        // Note that the bluetooth module is connected to something when the red LED is on and not blinking,
+        // but may not be connected to the app.
         Serial.println("Waiting for connection");
         delay(2000);
     }

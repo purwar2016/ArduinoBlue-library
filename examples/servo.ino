@@ -8,8 +8,8 @@
 
 
 // PINS
-const int BLUETOOTH_TX = 8;
-const int BLUETOOTH_RX = 7;
+#define BLUETOOTH_TX 8 // Arduino digital pin -> HM 10 TX
+#define BLUETOOTH_RX 7 //Arduino digital pin -> HM 10 RX
 
 // variables
 int throttle, steering, prevMillis, sliderVal;
@@ -20,7 +20,7 @@ ArduinoCommander phone(bluetooth); // pass reference of bluetooth object to Ardu
 Servo myservo;  // create servo object to control a servo
 
 void setup() {
-    // put your setup code here, to run once:
+
     Serial.begin(9600);
 
     // Start bluetooth serial at 9600 bps
@@ -34,10 +34,6 @@ void setup() {
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
-
-    // check for any incoming bluetooth signal
-    phone.checkBluetooth();
 
     // slider ID is an ASCII character
     sliderId = phone.getSliderId();
@@ -46,7 +42,7 @@ void loop() {
     sliderVal = phone.getSliderVal();
 
     if (sliderId == 'A') {
-        // display slider data when slider moves
+        // display slider data when slider A moves
         Serial.print("Slider ID: ");
         Serial.print(sliderId);
         Serial.print("\tValue: ");
