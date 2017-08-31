@@ -175,13 +175,17 @@ void ArduinoCommander::sendMsg(String msg) {
 
 bool ArduinoCommander::isConnected() {
 
+    while (_bluetooth.available() > 0) {
+        _bluetooth.read();
+    }
+
     _bluetooth.print("~");
 
     unsigned int prevMillis = millis();
 
-    // check for incoming signal for 4 seconds
+    // check for incoming signal for 1 seconds
     while (_bluetooth.available() <= 0) {
-        if (abs(millis() - prevMillis) < 4000) {
+        if (millis() - prevMillis > 1000) {
             return false;
         }
     }
@@ -191,7 +195,7 @@ bool ArduinoCommander::isConnected() {
         return true;
     }
 
-    // if not then perhaps it's connected to something else.
+    // if not then it's not connected to ArduinoCommander app.
     return false;
 
 }
