@@ -1,44 +1,42 @@
-
 /*
-Name: ArduinoCommander.cpp
+Name: ArduinoBLE.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#ifndef _ArduinoCommander_h
-#define _ArduinoCommander_h
+#ifndef _ArduinoBLE_h
+#define _ArduinoBLE_h
 #include <Arduino.h>
 
 const int DEFAULT_STEERING = 49;
-const int DEFAULT_THROTTLE = 0;
+const int DEFAULT_THROTTLE = 49;
 
-class ArduinoCommander
+class ArduinoBLE
 {
 public:
-    ArduinoCommander(Stream &output);
-    void begin();
-    char getButton();
-    char getSliderId();
+    ArduinoBLE(Stream &output);
+    int getButton();
+    int getSliderId();
     int getSliderVal();
     int getThrottle();
     int getSteering();
-    char getTextId();
-    char* getText();
-    int checkBluetooth();
+    bool checkBluetooth();
+    bool isConnected();
     void push(int elem);
     void deleteElements();
+    void sendMsg(String msg);
+    String getText();
 private:
     Stream &_bluetooth;
-    int _signal[25];
+    int _signal[10];
     int _signalLength = 0;
     int _throttle = DEFAULT_STEERING;
     int _steering = DEFAULT_THROTTLE;
     int _sliderVal;
-    char _sliderId;
-    char _button;
-    char _text[20];
-    char _textId;
+    int _sliderId;
+    int _button;
+    String _text;
 };
 
 #endif
