@@ -5,17 +5,14 @@
 #include <SoftwareSerial.h>
 #include <ArduinoBLE.h>
 
+
 // PINS
-#define BLUETOOTH_TX 8
-#define BLUETOOTH_RX 7
+const int BLUETOOTH_TX = 8;
+const int BLUETOOTH_RX = 7;
 
-// VARIABLES
-
-// 49 is the still value for the throttle and steering
-int prevThrottle = 49, prevSteering = 49,
-        throttle, steering, prevMillis, sliderVal, button, sliderId;
-
-String str;
+// variables
+int prevThrottle = 49, prevSteering = 49, // 49 is the still value for the throttle and steering
+    throttle, steering, prevMillis, sliderVal, button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 ArduinoBLE phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
@@ -43,7 +40,7 @@ void loop() {
     // Returns the text data sent from the phone.
     // After it returns the latest data, empty string "" is sent in subsequent
     // calls until text data is sent again.
-    str = phone.getText();
+    String str = phone.getText();
 
     // throttle and steering values go from 0 to 99.
     throttle = phone.getThrottle();
@@ -69,9 +66,8 @@ void loop() {
         Serial.println(sliderVal);
     }
 
-    // display throttle and steering data every half second when if steering or throttle value is changed
-    if (abs(millis() - prevMillis) > 500
-        && (prevThrottle != throttle || prevSteering != steering)) {
+    // display throttle and steering data if steering or throttle value is changed
+    if (prevThrottle != throttle || prevSteering != steering) {
         Serial.println("----------------------------");
         Serial.print("Throttle: ");
         Serial.println(throttle);
@@ -83,8 +79,7 @@ void loop() {
     }
 
     if (str != "") {
-        Serial.print(str);
-        Serial.print("\n");
+        Serial.println(str);
     }
 
     // Send string from serial command line to the phone. This will alert the user.

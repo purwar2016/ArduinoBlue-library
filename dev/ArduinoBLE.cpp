@@ -8,18 +8,6 @@ Contact: jaean37@gmail.com
 #include "ArduinoBLE.h"
 #include <Arduino.h>
 
-#define CONNECTION_CHECK 249
-#define TRANSMISSION_END 250
-#define DRIVE_TRANSMISSION 251
-#define BUTTON_TRANSMISSION 252
-#define SLIDER_TRANSMISSION 253
-#define TEXT_TRANSMISSION 254
-#define PATH_TRANSMISSION 255
-#define NO_TRANSMISSION -1
-
-#define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
-#define SHORT_TRANSMISSION_TIMEOUT 500
-
 ArduinoBLE::ArduinoBLE(Stream &output) :
         _bluetooth(output)
 {
@@ -110,14 +98,16 @@ String ArduinoBLE::readString() {
     int intRead;
     unsigned long prevTime = millis();
 
-    // Read until newline character or timeout is reached
+    // Read until end of transmission, timeout is reached, or maximum number of characters is reached.
     prevTime = millis();
     while (millis() - prevTime < TEXT_TRANSMISSION_TIMEOUT) {
         if (_bluetooth.available()) {
             intRead = _bluetooth.read();
             // break the loop if end of transmission
-            if (intRead == TRANSMISSION_END) break;
-            s.concat(char(intRead));
+            if (intRead == TRANSMISSION_END) {
+                break;
+            }
+            s += char(intRead);
         }
     }
     return s;
