@@ -8,9 +8,11 @@ Contact: jaean37@gmail.com
 #ifndef _ArduinoBLE_h
 #define _ArduinoBLE_h
 #include <Arduino.h>
+#include <AltSoftSerial.h>
 
 const int DEFAULT_STEERING = 49;
 const int DEFAULT_THROTTLE = 49;
+const int MAX_SHORT_SIGNAL_LENGTH = 3;
 
 class ArduinoBLE
 {
@@ -23,20 +25,28 @@ public:
     int getSteering();
     bool checkBluetooth();
     bool isConnected();
-    void push(int elem);
-    void deleteElements();
-    void sendMsg(String msg);
+    void sendMessage(String msg);
     String getText();
 private:
-    Stream &_bluetooth;
-    int _signal[10];
+    Stream & _bluetooth;
+    int _signal[MAX_SHORT_SIGNAL_LENGTH];
     int _signalLength = 0;
     int _throttle = DEFAULT_STEERING;
     int _steering = DEFAULT_THROTTLE;
     int _sliderVal;
     int _sliderId;
     int _button;
+    int _currentTransmission;
     String _text;
+    void clearSignalArray();
+    void pushToSignalArray(int elem);
+    void storeShortTransmission();
+    void processDriveTransmission();
+    void processButtonTransmission();
+    void processSliderTransmission();
+    void processTextTransmission();
+    void processPathTransmission();
+    String readString();
 };
 
 #endif
