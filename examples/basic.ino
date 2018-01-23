@@ -3,7 +3,7 @@
 */
 
 #include <SoftwareSerial.h>
-#include <ArduinoBLE.h>
+#include <ArduinoBlue.h>
 
 
 // PINS
@@ -15,7 +15,7 @@ int prevThrottle = 49, prevSteering = 49, // 49 is the still value for the throt
     throttle, steering, prevMillis, sliderVal, button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-ArduinoBLE phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
+ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
 
 // Setup code runs once after program starts
 void setup() {

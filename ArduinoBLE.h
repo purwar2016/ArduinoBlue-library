@@ -1,11 +1,11 @@
 /*
-Name: ArduinoBLE.cpp
+Name: ArduinoBlue.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#include "ArduinoBLE.h"
+#include "ArduinoBlue.h"
 #include <Arduino.h>
 
 #define CONNECTION_CHECK 249
@@ -20,12 +20,12 @@ Contact: jaean37@gmail.com
 #define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
 #define SHORT_TRANSMISSION_TIMEOUT 500
 
-ArduinoBLE::ArduinoBLE(Stream &output) :
+ArduinoBlue::ArduinoBlue(Stream &output) :
         _bluetooth(output)
 {
 }
 
-bool ArduinoBLE::checkBluetooth() {
+bool ArduinoBlue::checkBluetooth() {
 
     bool isDataRead = _bluetooth.available() > 0;
 
@@ -64,7 +64,7 @@ bool ArduinoBLE::checkBluetooth() {
 }
 
 // Stores short transmission into the signal array
-void ArduinoBLE::storeShortTransmission() {
+void ArduinoBlue::storeShortTransmission() {
     unsigned long prevMillis = millis();
     int intRead;
     while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
@@ -76,36 +76,36 @@ void ArduinoBLE::storeShortTransmission() {
     }
 }
 
-void ArduinoBLE::processDriveTransmission() {
+void ArduinoBlue::processDriveTransmission() {
     storeShortTransmission();
     _throttle = _signal[0];
     _steering = _signal[1];
     clearSignalArray();
 }
 
-void ArduinoBLE::processButtonTransmission() {
+void ArduinoBlue::processButtonTransmission() {
     storeShortTransmission();
     _button = _signal[0];
     clearSignalArray();
 }
 
-void ArduinoBLE::processSliderTransmission() {
+void ArduinoBlue::processSliderTransmission() {
     storeShortTransmission();
     _sliderId = _signal[0];
     _sliderVal = _signal[1];
     clearSignalArray();
 }
 
-void ArduinoBLE::processTextTransmission() {
+void ArduinoBlue::processTextTransmission() {
     _text = readString();
     clearSignalArray();
 }
 
-void ArduinoBLE::processPathTransmission() {
+void ArduinoBlue::processPathTransmission() {
     clearSignalArray();
 }
 
-String ArduinoBLE::readString() {
+String ArduinoBlue::readString() {
     String s;
     int intRead;
     unsigned long prevTime = millis();
@@ -123,7 +123,7 @@ String ArduinoBLE::readString() {
     return s;
 }
 
-void ArduinoBLE::pushToSignalArray(int elem) {
+void ArduinoBlue::pushToSignalArray(int elem) {
     if (elem < 0) {
         Serial.print("neg");
     }
@@ -132,52 +132,52 @@ void ArduinoBLE::pushToSignalArray(int elem) {
         _signalLength++;
     }
     else {
-        Serial.println("ArduinoBLE: Transmission error...");
+        Serial.println("ArduinoBlue: Transmission error...");
     }
 }
 
-void ArduinoBLE::clearSignalArray() {
+void ArduinoBlue::clearSignalArray() {
     for (int i = 0; i < _signalLength; i++) {
         _signal[i] = -1;
     }
     _signalLength = 0;
 }
 
-int ArduinoBLE::getButton() {
+int ArduinoBlue::getButton() {
     checkBluetooth();
     int btn = _button;
     _button = -1;
     return btn;
 }
 
-int ArduinoBLE::getSliderId() {
+int ArduinoBlue::getSliderId() {
     checkBluetooth();
     int id = _sliderId;
     _sliderId = -1;
     return id;
 }
 
-int ArduinoBLE::getSliderVal() {
+int ArduinoBlue::getSliderVal() {
     int val = _sliderVal;
     _sliderVal = -1;
     return val;
 }
 
-int ArduinoBLE::getThrottle() {
+int ArduinoBlue::getThrottle() {
     checkBluetooth();
     return _throttle;
 }
 
-int ArduinoBLE::getSteering() {
+int ArduinoBlue::getSteering() {
     checkBluetooth();
     return _steering;
 }
 
-void ArduinoBLE::sendMessage(String msg) {
+void ArduinoBlue::sendMessage(String msg) {
     _bluetooth.print(msg);
 }
 
-bool ArduinoBLE::isConnected() {
+bool ArduinoBlue::isConnected() {
     _bluetooth.print(CONNECTION_CHECK);
     // wait for 500 ms
     delay(500);
@@ -187,7 +187,7 @@ bool ArduinoBLE::isConnected() {
     return false;
 }
 
-String ArduinoBLE::getText() {
+String ArduinoBlue::getText() {
     checkBluetooth();
     String ret = _text;
     _text = "";

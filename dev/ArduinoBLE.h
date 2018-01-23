@@ -1,12 +1,12 @@
 /*
-Name: ArduinoBLE.cpp
+Name: ArduinoBlue.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#ifndef _ArduinoBLE_h
-#define _ArduinoBLE_h
+#ifndef _ArduinoBlue_h
+#define _ArduinoBlue_h
 #include <Arduino.h>
 #include <AltSoftSerial.h>
 
@@ -26,10 +26,10 @@ const int DEFAULT_STEERING = 49;
 const int DEFAULT_THROTTLE = 49;
 const int MAX_SHORT_SIGNAL_LENGTH = 3;
 
-class ArduinoBLE
+class ArduinoBlue
 {
 public:
-    ArduinoBLE(Stream &output);
+    ArduinoBlue(Stream &output);
     int getButton();
     int getSliderId();
     int getSliderVal();
