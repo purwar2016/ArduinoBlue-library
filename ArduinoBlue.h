@@ -5,7 +5,8 @@ Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#include "ArduinoBlue.h"
+#ifndef _ArduinoBlue_h
+#define _ArduinoBlue_h
 #include <Arduino.h>
 
 #define CONNECTION_CHECK 249
@@ -20,176 +21,43 @@ Contact: jaean37@gmail.com
 #define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
 #define SHORT_TRANSMISSION_TIMEOUT 500
 
-ArduinoBlue::ArduinoBlue(Stream &output) :
-        _bluetooth(output)
+const int DEFAULT_STEERING = 49;
+const int DEFAULT_THROTTLE = 49;
+const int MAX_SHORT_SIGNAL_LENGTH = 3;
+
+class ArduinoBlue
 {
-}
+public:
+    ArduinoBlue(Stream &output);
+    int getButton();
+    int getSliderId();
+    int getSliderVal();
+    int getThrottle();
+    int getSteering();
+    bool checkBluetooth();
+    bool isConnected();
+    void sendMessage(String msg);
+    String getText();
+private:
+    Stream & _bluetooth;
+    int _signal[MAX_SHORT_SIGNAL_LENGTH];
+    int _signalLength = 0;
+    int _throttle = DEFAULT_STEERING;
+    int _steering = DEFAULT_THROTTLE;
+    int _sliderVal = -1;
+    int _sliderId = -1;
+    int _button = -1;
+    int _currentTransmission = NO_TRANSMISSION;
+    String _text;
+    void clearSignalArray();
+    void pushToSignalArray(int elem);
+    void storeShortTransmission();
+    void processDriveTransmission();
+    void processButtonTransmission();
+    void processSliderTransmission();
+    void processTextTransmission();
+    void processPathTransmission();
+    String readString();
+};
 
-bool ArduinoBlue::checkBluetooth() {
-
-    bool isDataRead = _bluetooth.available() > 0;
-
-    while (_bluetooth.available() > 0) {
-        int intRead = _bluetooth.read();
-
-        // Check for transmission starting
-        // If a new transmission starts process the transmission
-        if (intRead == DRIVE_TRANSMISSION) {
-            processDriveTransmission();
-            _currentTransmission = NO_TRANSMISSION;
-        }
-        else if (intRead == BUTTON_TRANSMISSION) {
-            processButtonTransmission();
-            _currentTransmission = NO_TRANSMISSION;
-        }
-        else if (intRead == SLIDER_TRANSMISSION) {
-            processSliderTransmission();
-            _currentTransmission = NO_TRANSMISSION;
-        }
-        else if (intRead == TEXT_TRANSMISSION) {
-            processTextTransmission();
-            _currentTransmission = NO_TRANSMISSION;
-        }
-        else if (intRead == PATH_TRANSMISSION) {
-            processPathTransmission();
-            _currentTransmission = NO_TRANSMISSION;
-        }
-        else if (intRead == CONNECTION_CHECK) {
-            _bluetooth.print(CONNECTION_CHECK);
-            _currentTransmission = NO_TRANSMISSION;
-        }
-    }
-
-    return isDataRead;
-}
-
-// Stores short transmission into the signal array
-void ArduinoBlue::storeShortTransmission() {
-    unsigned long prevMillis = millis();
-    int intRead;
-    while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
-        if (_bluetooth.available()) {
-            intRead = _bluetooth.read();
-            if (intRead == TRANSMISSION_END) break;
-            pushToSignalArray(intRead);
-        }
-    }
-}
-
-void ArduinoBlue::processDriveTransmission() {
-    storeShortTransmission();
-    _throttle = _signal[0];
-    _steering = _signal[1];
-    clearSignalArray();
-}
-
-void ArduinoBlue::processButtonTransmission() {
-    storeShortTransmission();
-    _button = _signal[0];
-    clearSignalArray();
-}
-
-void ArduinoBlue::processSliderTransmission() {
-    storeShortTransmission();
-    _sliderId = _signal[0];
-    _sliderVal = _signal[1];
-    clearSignalArray();
-}
-
-void ArduinoBlue::processTextTransmission() {
-    _text = readString();
-    clearSignalArray();
-}
-
-void ArduinoBlue::processPathTransmission() {
-    clearSignalArray();
-}
-
-String ArduinoBlue::readString() {
-    String s;
-    int intRead;
-    unsigned long prevTime = millis();
-
-    // Read until newline character or timeout is reached
-    prevTime = millis();
-    while (millis() - prevTime < TEXT_TRANSMISSION_TIMEOUT) {
-        if (_bluetooth.available()) {
-            intRead = _bluetooth.read();
-            // break the loop if end of transmission
-            if (intRead == TRANSMISSION_END) break;
-            s.concat((char)intRead);
-        }
-    }
-    return s;
-}
-
-void ArduinoBlue::pushToSignalArray(int elem) {
-    if (elem < 0) {
-        Serial.print("neg");
-    }
-    if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
-        _signal[_signalLength] = elem;
-        _signalLength++;
-    }
-    else {
-        Serial.println("ArduinoBlue: Transmission error...");
-    }
-}
-
-void ArduinoBlue::clearSignalArray() {
-    for (int i = 0; i < _signalLength; i++) {
-        _signal[i] = -1;
-    }
-    _signalLength = 0;
-}
-
-int ArduinoBlue::getButton() {
-    checkBluetooth();
-    int btn = _button;
-    _button = -1;
-    return btn;
-}
-
-int ArduinoBlue::getSliderId() {
-    checkBluetooth();
-    int id = _sliderId;
-    _sliderId = -1;
-    return id;
-}
-
-int ArduinoBlue::getSliderVal() {
-    int val = _sliderVal;
-    _sliderVal = -1;
-    return val;
-}
-
-int ArduinoBlue::getThrottle() {
-    checkBluetooth();
-    return _throttle;
-}
-
-int ArduinoBlue::getSteering() {
-    checkBluetooth();
-    return _steering;
-}
-
-void ArduinoBlue::sendMessage(String msg) {
-    _bluetooth.print(msg);
-}
-
-bool ArduinoBlue::isConnected() {
-    _bluetooth.print(CONNECTION_CHECK);
-    // wait for 500 ms
-    delay(500);
-    if (_bluetooth.available()) {
-        return _bluetooth.read() == CONNECTION_CHECK;
-    }
-    return false;
-}
-
-String ArduinoBlue::getText() {
-    checkBluetooth();
-    String ret = _text;
-    _text = "";
-    return ret;
-}
+#endif

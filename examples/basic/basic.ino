@@ -6,13 +6,15 @@
 #include <ArduinoBlue.h>
 
 
-// PINS
+// List of supported pins: https://www.arduino.cc/en/Reference/SoftwareSerial
+// Bluetooth TX -> Arduino D8
 const int BLUETOOTH_TX = 8;
+// Bluetooth RX -> Arduino D7
 const int BLUETOOTH_RX = 7;
 
 // variables
 int prevThrottle = 49, prevSteering = 49, // 49 is the still value for the throttle and steering
-    throttle, steering, prevMillis, sliderVal, button, sliderId;
+        throttle, steering, prevMillis, sliderVal, button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
