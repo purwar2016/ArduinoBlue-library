@@ -8,7 +8,6 @@ Contact: jaean37@gmail.com
 #ifndef _ArduinoBlue_h
 #define _ArduinoBlue_h
 #include <Arduino.h>
-#include <AltSoftSerial.h>
 
 #define CONNECTION_CHECK 249
 #define TRANSMISSION_END 250
