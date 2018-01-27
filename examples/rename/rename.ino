@@ -3,7 +3,7 @@
  */
 
 #include <SoftwareSerial.h>
-#include <ArduinoCommander.h>
+#include <ArduinoBlue.h>
 
 
 // PINS
@@ -11,7 +11,7 @@ const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-ArduinoCommander phone(bluetooth);
+ArduinoBlue phone(bluetooth);
 
 void setup() {
 
