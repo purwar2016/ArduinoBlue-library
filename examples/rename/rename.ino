@@ -20,8 +20,8 @@ void setup() {
 
     delay(1000);
 
-    // rename device to xxxxxxxx
-    bluetooth.write("AT+NAMExxxxxxxx");
+    // rename device to xxxxxx
+    bluetooth.write("AT+NAMExxxxxx");
 
 }
 
