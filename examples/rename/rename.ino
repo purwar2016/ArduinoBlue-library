@@ -21,7 +21,7 @@ void setup() {
     delay(1000);
 
     // rename device to xxxxxxxx
-    bluetooth.write("AT+NAMESnapBot");
+    bluetooth.write("AT+NAMExxxxxxxx");
 
 }
 
