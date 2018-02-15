@@ -8,18 +8,6 @@ Contact: jaean37@gmail.com
 #include "ArduinoBlue.h"
 #include <Arduino.h>
 
-#define CONNECTION_CHECK 249
-#define TRANSMISSION_END 250
-#define DRIVE_TRANSMISSION 251
-#define BUTTON_TRANSMISSION 252
-#define SLIDER_TRANSMISSION 253
-#define TEXT_TRANSMISSION 254
-#define PATH_TRANSMISSION 255
-#define NO_TRANSMISSION -1
-
-#define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
-#define SHORT_TRANSMISSION_TIMEOUT 500
-
 ArduinoBlue::ArduinoBlue(Stream &output) :
         _bluetooth(output)
 {
@@ -30,33 +18,27 @@ bool ArduinoBlue::checkBluetooth() {
     bool isDataRead = _bluetooth.available() > 0;
 
     while (_bluetooth.available() > 0) {
-        int intRead = _bluetooth.read();
+        uint8_t intRead = _bluetooth.read();
 
         // Check for transmission starting
         // If a new transmission starts process the transmission
         if (intRead == DRIVE_TRANSMISSION) {
             processDriveTransmission();
-            _currentTransmission = NO_TRANSMISSION;
         }
         else if (intRead == BUTTON_TRANSMISSION) {
             processButtonTransmission();
-            _currentTransmission = NO_TRANSMISSION;
         }
         else if (intRead == SLIDER_TRANSMISSION) {
             processSliderTransmission();
-            _currentTransmission = NO_TRANSMISSION;
         }
         else if (intRead == TEXT_TRANSMISSION) {
             processTextTransmission();
-            _currentTransmission = NO_TRANSMISSION;
         }
         else if (intRead == PATH_TRANSMISSION) {
             processPathTransmission();
-            _currentTransmission = NO_TRANSMISSION;
         }
         else if (intRead == CONNECTION_CHECK) {
             _bluetooth.print(CONNECTION_CHECK);
-            _currentTransmission = NO_TRANSMISSION;
         }
     }
 
@@ -66,7 +48,7 @@ bool ArduinoBlue::checkBluetooth() {
 // Stores short transmission into the signal array
 void ArduinoBlue::storeShortTransmission() {
     unsigned long prevMillis = millis();
-    int intRead;
+    uint8_t intRead;
     while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
         if (_bluetooth.available()) {
             intRead = _bluetooth.read();
@@ -107,7 +89,7 @@ void ArduinoBlue::processPathTransmission() {
 
 String ArduinoBlue::readString() {
     String s;
-    int intRead;
+    uint8_t intRead;
     unsigned long prevTime = millis();
 
     // Read until newline character or timeout is reached
@@ -123,7 +105,7 @@ String ArduinoBlue::readString() {
     return s;
 }
 
-void ArduinoBlue::pushToSignalArray(int elem) {
+void ArduinoBlue::pushToSignalArray(uint8_t elem) {
     if (elem < 0) {
         Serial.print("neg");
     }
@@ -137,29 +119,32 @@ void ArduinoBlue::pushToSignalArray(int elem) {
 }
 
 void ArduinoBlue::clearSignalArray() {
-    for (int i = 0; i < _signalLength; i++) {
-        _signal[i] = -1;
+    for (uint8_t i = 0; i < _signalLength; i++) {
+        _signal[i] = DEFAULT_VALUE;
     }
     _signalLength = 0;
 }
 
 int ArduinoBlue::getButton() {
     checkBluetooth();
-    int btn = _button;
-    _button = -1;
+    uint8_t btn = _button;
+    _button = DEFAULT_VALUE;
+    if (btn == DEFAULT_VALUE) return -1;
     return btn;
 }
 
 int ArduinoBlue::getSliderId() {
     checkBluetooth();
-    int id = _sliderId;
-    _sliderId = -1;
+    uint8_t id = _sliderId;
+    _sliderId = DEFAULT_VALUE;
+    if (id == DEFAULT_VALUE) return -1;
     return id;
 }
 
 int ArduinoBlue::getSliderVal() {
-    int val = _sliderVal;
-    _sliderVal = -1;
+    uint8_t val = _sliderVal;
+    _sliderVal = DEFAULT_VALUE;
+    if (val == DEFAULT_VALUE) return -1;
     return val;
 }
 
@@ -173,8 +158,13 @@ int ArduinoBlue::getSteering() {
     return _steering;
 }
 
+void ArduinoBlue::sendText(String msg) {
+    _bluetooth.print(((char)TEXT_SEND_TRANSMISSION) + msg + ((char)TRANSMISSION_END));
+}
+
+// for backwards compatibility
 void ArduinoBlue::sendMessage(String msg) {
-    _bluetooth.print(msg);
+    sendText(msg);
 }
 
 bool ArduinoBlue::isConnected() {
