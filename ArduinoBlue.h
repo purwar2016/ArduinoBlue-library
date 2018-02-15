@@ -9,6 +9,7 @@ Contact: jaean37@gmail.com
 #define _ArduinoBlue_h
 #include <Arduino.h>
 
+#define TEXT_SEND_TRANSMISSION 248
 #define CONNECTION_CHECK 249
 #define TRANSMISSION_END 250
 #define DRIVE_TRANSMISSION 251
@@ -16,14 +17,15 @@ Contact: jaean37@gmail.com
 #define SLIDER_TRANSMISSION 253
 #define TEXT_TRANSMISSION 254
 #define PATH_TRANSMISSION 255
-#define NO_TRANSMISSION -1
+
+#define DEFAULT_VALUE 255
 
 #define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
 #define SHORT_TRANSMISSION_TIMEOUT 500
 
-const int DEFAULT_STEERING = 49;
-const int DEFAULT_THROTTLE = 49;
-const int MAX_SHORT_SIGNAL_LENGTH = 3;
+const uint8_t DEFAULT_STEERING = 49;
+const uint8_t DEFAULT_THROTTLE = 49;
+const uint8_t MAX_SHORT_SIGNAL_LENGTH = 3;
 
 class ArduinoBlue
 {
@@ -36,21 +38,21 @@ public:
     int getSteering();
     bool checkBluetooth();
     bool isConnected();
+    void sendText(String msg);
     void sendMessage(String msg);
     String getText();
 private:
     Stream & _bluetooth;
-    int _signal[MAX_SHORT_SIGNAL_LENGTH];
-    int _signalLength = 0;
-    int _throttle = DEFAULT_STEERING;
-    int _steering = DEFAULT_THROTTLE;
-    int _sliderVal = -1;
-    int _sliderId = -1;
-    int _button = -1;
-    int _currentTransmission = NO_TRANSMISSION;
+    uint8_t _signal[MAX_SHORT_SIGNAL_LENGTH];
+    uint8_t _signalLength = 0;
+    uint8_t _throttle = DEFAULT_STEERING;
+    uint8_t _steering = DEFAULT_THROTTLE;
+    uint8_t _sliderVal = DEFAULT_VALUE;
+    uint8_t _sliderId = DEFAULT_VALUE;
+    uint8_t _button = DEFAULT_VALUE;
     String _text;
     void clearSignalArray();
-    void pushToSignalArray(int elem);
+    void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
