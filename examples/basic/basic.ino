@@ -70,14 +70,9 @@ void loop() {
 
     // display throttle and steering data if steering or throttle value is changed
     if (prevThrottle != throttle || prevSteering != steering) {
-        Serial.println("----------------------------");
-        Serial.print("Throttle: ");
-        Serial.println(throttle);
-        Serial.print("Steering: ");
-        Serial.println(steering);
+        Serial.print("Throttle: "); Serial.print(throttle); Serial.print(", Steering: "); Serial.println(steering);
         prevThrottle = throttle;
         prevSteering = steering;
-        prevMillis = millis();
     }
 
     if (str != "") {
