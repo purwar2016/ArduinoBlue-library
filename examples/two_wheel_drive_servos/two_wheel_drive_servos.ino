@@ -1,5 +1,5 @@
 /*
-* This is the example code for two wheel differential drive robots using two continuous rotation micro servos.
+* Demo code for a two wheel differential drive robot using two continuous rotation micro servos.
 */
 
 #include <Servo.h>
