@@ -1,8 +1,6 @@
 #include <Servo.h>
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
-#include <Wire.h>
-#include "Adafruit_TCS34725.h"
 
 /**
  * Pins
