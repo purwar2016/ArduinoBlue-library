@@ -7,6 +7,12 @@ Contact: jaean37@gmail.com
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
+#include <LinkedList.h>
+
+typedef union {
+	float number;
+	uint8_t bytes[4];
+} FLOATUNION_t;
 
 ArduinoBlue::ArduinoBlue(Stream &output) :
         _bluetooth(output)
@@ -26,6 +32,7 @@ bool ArduinoBlue::checkBluetooth() {
             processDriveTransmission();
         }
         else if (intRead == BUTTON_TRANSMISSION) {
+			Serial.println("BUTTON TRANSMISSION");
             processButtonTransmission();
         }
         else if (intRead == SLIDER_TRANSMISSION) {
@@ -35,6 +42,7 @@ bool ArduinoBlue::checkBluetooth() {
             processTextTransmission();
         }
         else if (intRead == PATH_TRANSMISSION) {
+			Serial.println("PROCESSING PATH TRANSMISSION");
             processPathTransmission();
         }
         else if (intRead == CONNECTION_CHECK) {
@@ -43,19 +51,6 @@ bool ArduinoBlue::checkBluetooth() {
     }
 
     return isDataRead;
-}
-
-// Stores short transmission into the signal array
-void ArduinoBlue::storeShortTransmission() {
-    unsigned long prevMillis = millis();
-    uint8_t intRead;
-    while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
-        if (_bluetooth.available()) {
-            intRead = _bluetooth.read();
-            if (intRead == TRANSMISSION_END) break;
-            pushToSignalArray(intRead);
-        }
-    }
 }
 
 void ArduinoBlue::processDriveTransmission() {
@@ -83,8 +78,75 @@ void ArduinoBlue::processTextTransmission() {
     clearSignalArray();
 }
 
+// TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
+	storePathTransmission();
+	_pathAvailable = true;
     clearSignalArray();
+}
+
+static float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) {
+	FLOATUNION_t floatUntion;
+	floatUntion.bytes[0] = u1;
+	floatUntion.bytes[1] = u2;
+	floatUntion.bytes[2] = u3;
+	floatUntion.bytes[3] = u4;
+	return floatUntion.number;
+}
+
+void ArduinoBlue::storePathTransmission() {
+	unsigned long prevMillis = millis();
+	uint8_t intRead;
+	const int SIZE = 8;
+	float ary[SIZE];
+	int numElem = 0;
+	_path.clear();
+
+	Serial.println("PRINTING PATH");
+	while (millis() - prevMillis < PATH_TRANSMISSION_TIMEOUT) {
+		if (_bluetooth.available()) {
+			intRead = _bluetooth.read();
+			ary[numElem] = intRead;
+			numElem++;
+			Serial.print("numE: "); Serial.println(numElem);
+			if (numElem == SIZE) {
+				double n1 = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
+				double n2 = bytesToFloat(ary[4], ary[5], ary[6], ary[7]);
+				Serial.print("x: "); Serial.print(n1);
+				Serial.print("\ty: "); Serial.println(n2);
+				PathPoint *p = new PathPoint();
+				p->x = n1;
+				p->y = n2;
+				_path.add(p);
+				numElem = 0;
+			}
+			//if (intRead == TRANSMISSION_END) break;
+		}
+	}
+
+
+	/*double x, y;
+	for (int i = 0; i < 5; i++) {
+		PathPoint *p = new PathPoint();
+		x = i;
+		y = i + 1;
+		p->x = x;
+		p->y = y;
+		_path.add(p);
+	} */
+}
+
+// Stores short transmission into the signal array
+void ArduinoBlue::storeShortTransmission() {
+	unsigned long prevMillis = millis();
+	uint8_t intRead;
+	while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
+		if (_bluetooth.available()) {
+			intRead = _bluetooth.read();
+			if (intRead == TRANSMISSION_END) break;
+			pushToSignalArray(intRead);
+		}
+	}
 }
 
 String ArduinoBlue::readString() {
@@ -125,6 +187,12 @@ void ArduinoBlue::clearSignalArray() {
     _signalLength = 0;
 }
 
+bool ArduinoBlue::isPathAvailable() {
+	bool toReturn = _pathAvailable;
+	_pathAvailable = false;
+	return toReturn;
+}
+
 int ArduinoBlue::getButton() {
     checkBluetooth();
     uint8_t btn = _button;
@@ -156,6 +224,10 @@ int ArduinoBlue::getThrottle() {
 int ArduinoBlue::getSteering() {
     checkBluetooth();
     return _steering;
+}
+
+LinkedList<PathPoint*> * ArduinoBlue::getPath() {
+	return &_path;
 }
 
 void ArduinoBlue::sendText(String msg) {
