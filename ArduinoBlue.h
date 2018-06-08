@@ -5,9 +5,11 @@ Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#ifndef _ArduinoBlue_h
-#define _ArduinoBlue_h
+#ifndef ArduinoBlue_h
+#define ArduinoBlue_h
+
 #include <Arduino.h>
+#include <LinkedList.h>
 
 #define TEXT_SEND_TRANSMISSION 248
 #define CONNECTION_CHECK 249
@@ -22,10 +24,16 @@ Contact: jaean37@gmail.com
 
 #define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
 #define SHORT_TRANSMISSION_TIMEOUT 500
+#define PATH_TRANSMISSION_TIMEOUT 10000
 
 const uint8_t DEFAULT_STEERING = 49;
 const uint8_t DEFAULT_THROTTLE = 49;
 const uint8_t MAX_SHORT_SIGNAL_LENGTH = 3;
+
+struct PathPoint {
+	double x;
+	double y;
+};
 
 class ArduinoBlue
 {
@@ -36,10 +44,13 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
+	LinkedList<PathPoint*> * getPath();
     bool checkBluetooth();
     bool isConnected();
+	bool isPathAvailable();
     void sendText(String msg);
     void sendMessage(String msg);
+	static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
 private:
     Stream & _bluetooth;
@@ -50,10 +61,13 @@ private:
     uint8_t _sliderVal = DEFAULT_VALUE;
     uint8_t _sliderId = DEFAULT_VALUE;
     uint8_t _button = DEFAULT_VALUE;
+	bool _pathAvailable = false;
     String _text;
+	LinkedList<PathPoint*> _path = LinkedList<PathPoint*>();
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
+	void storePathTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
     void processSliderTransmission();
