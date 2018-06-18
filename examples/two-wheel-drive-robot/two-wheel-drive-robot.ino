@@ -5,29 +5,27 @@
 #include <Servo.h>
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
-#include <Wire.h>
-#include "Adafruit_TCS34725.h"
 
 // continuous microservos
-#define leftServoPin 11
-#define rightServoPin 10
+const int leftServoPin = 11;
+const int rightServoPin = 10;
 
 // Bluetooth module HM 10 pins
-#define BLUETOOTH_TX 8
-#define BLUETOOTH_RX 7
+const int BLUETOOTH_TX = 8;
+const int BLUETOOTH_RX = 7;
 
 // Continuous rotation micro servo parameters.
-#define THROTTLE_ZERO_THRESHOLD 5
-#define MIN_THROTTLE 10
-#define STILL 90
-#define LEFT_FORWARD_MAX 130
-#define LEFT_BACKWARD_MAX 50
-#define RIGHT_FORWARD_MAX LEFT_BACKWARD_MAX
-#define RIGHT_BACKWARD_MAX LEFT_FORWARD_MAX
-#define LEFT_FORWARD_MIN STILL + MIN_THROTTLE
-#define LEFT_BACKWARD_MIN STILL - MIN_THROTTLE
-#define RIGHT_FORWARD_MIN LEFT_BACKWARD_MIN
-#define RIGHT_BACKWARD_MIN LEFT_FORWARD_MIN
+const int THROTTLE_ZERO_THRESHOLD = 5;
+const int MIN_THROTTLE = 10;
+const int STILL = 90;
+const int LEFT_FORWARD_MAX = 130;
+const int LEFT_BACKWARD_MAX = 50;
+const int RIGHT_FORWARD_MAX = LEFT_BACKWARD_MAX;
+const int RIGHT_BACKWARD_MAX = LEFT_FORWARD_MAX;
+const int LEFT_FORWARD_MIN = STILL + MIN_THROTTLE;
+const int LEFT_BACKWARD_MIN = STILL - MIN_THROTTLE;
+const int RIGHT_FORWARD_MIN = LEFT_BACKWARD_MIN;
+const int RIGHT_BACKWARD_MIN = LEFT_FORWARD_MIN;
 
 Servo leftServo;
 Servo rightServo;
