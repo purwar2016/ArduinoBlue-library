@@ -12,6 +12,7 @@
 // The bluetooth tx and rx pins must be supported by software serial.
 // Visit https://www.arduino.cc/en/Reference/SoftwareSerial for unsupported pins.
 // Bluetooth TX -> Arduino D8
+// Bluetooth RX -> Arduino D7
 #define BLUETOOTH_TX_PIN 8
 #define BLUETOOTH_RX_PIN 7
 
