@@ -9,9 +9,9 @@
 // The bluetooth tx and rx pins must be supported by software serial.
 // Visit https://www.arduino.cc/en/Reference/SoftwareSerial for unsupported pins.
 // Bluetooth TX -> Arduino D8
-const int BLUETOOTH_TX = 11;
+const int BLUETOOTH_TX = 8;
 // Bluetooth RX -> Arduino D7
-const int BLUETOOTH_RX = 10;
+const int BLUETOOTH_RX = 7;
 
 int prevThrottle = 49;
 int prevSteering = 49;
