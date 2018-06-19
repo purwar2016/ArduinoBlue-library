@@ -11,7 +11,7 @@ const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-ArduinoBlue phone(bluetooth);
+ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue constructor.
 
 void setup() {
 
