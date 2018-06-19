@@ -17,7 +17,7 @@ const int BLUETOOTH_TX_PIN = 8;
 const int BLUETOOTH_RX_PIN = 7;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);
-ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
+ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue constructor.
 
 int button;
 bool redOn;
