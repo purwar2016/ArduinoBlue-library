@@ -17,7 +17,7 @@ const int BLUETOOTH_RX = 7;
 const int LED_PIN = 9;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue.
+ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue constructor.
 
 bool isLedOn = false;
 
