@@ -18,7 +18,7 @@ int prevSteering = 49;
 int throttle, steering, sliderVal, button, sliderId;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
-ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoCommander.
+ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue constructor
 
 // Setup code runs once after program starts.
 void setup() {
