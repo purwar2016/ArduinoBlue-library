@@ -11,6 +11,8 @@ Contact: jaean37@gmail.com
 #include <Arduino.h>
 #include <LinkedList.h>
 
+#define LOCATION_TRANSMISSION_START 246
+#define DELIMETER 247
 #define TEXT_SEND_TRANSMISSION 248
 #define CONNECTION_CHECK 249
 #define TRANSMISSION_END 250
@@ -50,6 +52,7 @@ public:
 	bool isPathAvailable();
     void sendText(String msg);
     void sendMessage(String msg);
+	void sendLocation(double, double, double, int);
 	static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
 private:
@@ -73,6 +76,7 @@ private:
     void processSliderTransmission();
     void processTextTransmission();
     void processPathTransmission();
+	void sendFloatAsBytes(float);
     String readString();
 };
 
