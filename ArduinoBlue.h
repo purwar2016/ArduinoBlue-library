@@ -1,5 +1,5 @@
 /*
-Name: ArduinoBlue.cpp
+Name: ArduinoBlue.h
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
@@ -9,7 +9,6 @@ Contact: jaean37@gmail.com
 #define ArduinoBlue_h
 
 #include <Arduino.h>
-#include <LinkedList.h>
 
 #define LOCATION_TRANSMISSION_START 246
 #define DELIMETER 247
@@ -32,10 +31,6 @@ const uint8_t DEFAULT_STEERING = 49;
 const uint8_t DEFAULT_THROTTLE = 49;
 const uint8_t MAX_SHORT_SIGNAL_LENGTH = 3;
 
-struct PathPoint {
-	double x;
-	double y;
-};
 
 class ArduinoBlue
 {
@@ -46,7 +41,10 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
-	LinkedList<PathPoint*> * getPath();
+	double * getPath();
+	double getPathX(int);
+	double getPathY(int);
+	double getPathLength();
     bool checkBluetooth();
     bool isConnected();
 	bool isPathAvailable();
@@ -66,7 +64,8 @@ private:
     uint8_t _button = DEFAULT_VALUE;
 	bool _pathAvailable = false;
     String _text;
-	LinkedList<PathPoint*> _path = LinkedList<PathPoint*>();
+	double * _path;
+	int _pathLength;
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
