@@ -7,7 +7,6 @@ Contact: jaean37@gmail.com
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
-#include <LinkedList.h>
 
 typedef union {
 	float number;
@@ -111,33 +110,41 @@ float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) 
 }
 
 void ArduinoBlue::storePathTransmission() {
-	_path.clear();
+	// Delete the previously stored path if available.
+	delete[] _path;
 
 	unsigned long prevMillis = millis();
 	uint8_t intRead;
 	double xVal, yVal;
-	const int SIZE = 8;
-	int numRead;
-	uint8_t ary[SIZE];
+	const int BYTES_PER_FLOAT = 4;
+	int bytesRead;
+	int index = -1;
+	uint8_t ary[BYTES_PER_FLOAT];
 
+	// Read the float values corresponding to the path data.
 	while (millis() - prevMillis < PATH_TRANSMISSION_TIMEOUT) {
 		if (_bluetooth.available()) {
 			
 			intRead = _bluetooth.read();
 			
-			ary[numRead] = intRead;
-			numRead++;
+			ary[bytesRead] = intRead;
+			bytesRead++;
 
-			if (numRead == SIZE) {
-				double n1 = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
-				double n2 = bytesToFloat(ary[4], ary[5], ary[6], ary[7]);
-				// Serial.print("x: "); Serial.print(n1);
-				// Serial.print("\ty: "); Serial.println(n2);
-				PathPoint *p = new PathPoint();
-				p->x = n1;
-				p->y = n2;
-				_path.add(p);
-				numRead = 0;
+			if (bytesRead == BYTES_PER_FLOAT) {
+				// Convert the byte array to float array.
+				double number = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
+
+				// The first path data transmitted is the length.
+				if (index == -1) {
+					_pathLength = (int)number;
+					_path = new double[_pathLength*2];
+				}
+				// Subsequent path data transmission are the coordinates.
+				else {
+					_path[index] = number;
+				}
+				index++;
+				bytesRead = 0;
 			}
 		}
 	}
@@ -232,9 +239,20 @@ int ArduinoBlue::getSteering() {
     return _steering;
 }
 
-LinkedList<PathPoint*> * ArduinoBlue::getPath() {
-	_pathAvailable = false;
-	return &_path;
+double * ArduinoBlue::getPath() {
+	return _path;
+}
+
+double ArduinoBlue::getPathX(int i) {
+	return _path[i * 2];
+}
+
+double ArduinoBlue::getPathY(int i) {
+	return _path[i * 2 + 1];
+}
+
+double ArduinoBlue::getPathLength() {
+	return _pathLength;
 }
 
 void ArduinoBlue::sendText(String msg) {
