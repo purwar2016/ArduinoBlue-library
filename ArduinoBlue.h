@@ -69,7 +69,7 @@ private:
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
-	void storePathTransmission();
+	bool storePathTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
     void processSliderTransmission();
