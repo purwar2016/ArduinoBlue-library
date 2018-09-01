@@ -31,30 +31,29 @@ const uint8_t DEFAULT_STEERING = 49;
 const uint8_t DEFAULT_THROTTLE = 49;
 const uint8_t MAX_SHORT_SIGNAL_LENGTH = 3;
 
-
-class ArduinoBlue
-{
+class ArduinoBlue {
 public:
-    ArduinoBlue(Stream &output);
+    ArduinoBlue(Stream& output);
     int getButton();
     int getSliderId();
     int getSliderVal();
     int getThrottle();
     int getSteering();
-	double * getPath();
-	double getPathX(int);
-	double getPathY(int);
-	double getPathLength();
+    double* getPath();
+    double getPathX(int);
+    double getPathY(int);
+    double getPathLength();
     bool checkBluetooth();
     bool isConnected();
-	bool isPathAvailable();
+    bool isPathAvailable();
     void sendText(String msg);
     void sendMessage(String msg);
-	void sendLocation(double, double, double, int);
-	static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
+    void sendLocation(double, double, double, int);
+    static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
+
 private:
-    Stream & _bluetooth;
+    Stream& _bluetooth;
     uint8_t _signal[MAX_SHORT_SIGNAL_LENGTH];
     uint8_t _signalLength = 0;
     uint8_t _throttle = DEFAULT_STEERING;
@@ -62,20 +61,20 @@ private:
     uint8_t _sliderVal = DEFAULT_VALUE;
     uint8_t _sliderId = DEFAULT_VALUE;
     uint8_t _button = DEFAULT_VALUE;
-	bool _pathAvailable = false;
+    bool _pathAvailable = false;
     String _text;
-	double * _path;
-	int _pathLength;
+    double* _path;
+    int _pathLength;
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
-	bool storePathTransmission();
+    bool storePathTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
     void processSliderTransmission();
     void processTextTransmission();
     void processPathTransmission();
-	void sendFloatAsBytes(float);
+    void sendFloatAsBytes(float);
     String readString();
 };
 
