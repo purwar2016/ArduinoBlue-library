@@ -8,6 +8,9 @@ Contact: jaean37@gmail.com
 #include "ArduinoBlue.h"
 #include <Arduino.h>
 
+//const int tempPathLength = 8;
+//double tempPath[tempPathLength] = { -500,-500, 10,10, 100,0, 300,300 };
+
 typedef union {
 	float number;
 	uint8_t bytes[4];
@@ -77,8 +80,8 @@ void ArduinoBlue::processTextTransmission() {
 
 // TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
-	storePathTransmission();
-	_pathAvailable = true;
+	Serial.println(_pathAvailable);
+	_pathAvailable = storePathTransmission();
     clearSignalArray();
 }
 
@@ -109,7 +112,7 @@ float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) 
 	return floatUntion.number;
 }
 
-void ArduinoBlue::storePathTransmission() {
+bool ArduinoBlue::storePathTransmission() {
 	// Delete the previously stored path if available.
 	delete[] _path;
 
@@ -117,37 +120,47 @@ void ArduinoBlue::storePathTransmission() {
 	uint8_t intRead;
 	double xVal, yVal;
 	const int BYTES_PER_FLOAT = 4;
-	int bytesRead;
+	int bytesReadIteration = 0;
+	int numbersRead = 0;
 	int index = -1;
 	uint8_t ary[BYTES_PER_FLOAT];
+	_pathLength = 9999; // Get in the loop
 
 	// Read the float values corresponding to the path data.
-	while (millis() - prevMillis < PATH_TRANSMISSION_TIMEOUT) {
+	while (numbersRead < _pathLength * 2) {
 		if (_bluetooth.available()) {
-			
-			intRead = _bluetooth.read();
-			
-			ary[bytesRead] = intRead;
-			bytesRead++;
 
-			if (bytesRead == BYTES_PER_FLOAT) {
+			intRead = _bluetooth.read();
+
+			ary[bytesReadIteration] = intRead;
+			bytesReadIteration++;
+
+			if (bytesReadIteration == BYTES_PER_FLOAT) {
 				// Convert the byte array to float array.
 				double number = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
 
 				// The first path data transmitted is the length.
 				if (index == -1) {
 					_pathLength = (int)number;
-					_path = new double[_pathLength*2];
+					_path = new double[_pathLength * 2];
+					//Serial.print("Path length: "); Serial.println(_pathLength);
 				}
 				// Subsequent path data transmission are the coordinates.
 				else {
 					_path[index] = number;
+					numbersRead++;
+					//Serial.print("Number Read: "); Serial.println(number);
 				}
 				index++;
-				bytesRead = 0;
+				bytesReadIteration = 0;
 			}
 		}
+		if (millis() - prevMillis > PATH_TRANSMISSION_TIMEOUT) {
+			//Serial.println("Error: path transmission took too long.");
+			//return false;
+		}
 	}
+	return true;
 }
 
 // Stores short transmission into the signal array
@@ -245,14 +258,17 @@ double * ArduinoBlue::getPath() {
 
 double ArduinoBlue::getPathX(int i) {
 	return _path[i * 2];
+	//return tempPath[i * 2];
 }
 
 double ArduinoBlue::getPathY(int i) {
 	return _path[i * 2 + 1];
+	//return tempPath[i * 2 + 1];
 }
 
 double ArduinoBlue::getPathLength() {
 	return _pathLength;
+	//return tempPathLength;
 }
 
 void ArduinoBlue::sendText(String msg) {
