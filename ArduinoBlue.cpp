@@ -80,9 +80,11 @@ void ArduinoBlue::processTextTransmission() {
 
 // TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
+	//noInterrupts();
 	Serial.println(_pathAvailable);
 	_pathAvailable = storePathTransmission();
     clearSignalArray();
+	//interrupts();
 }
 
 void ArduinoBlue::sendLocation(double xPos, double yPos, double headingAngle, int pathIndex) {
