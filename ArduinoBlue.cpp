@@ -7,9 +7,8 @@ Contact: jaean37@gmail.com
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
+#include <spline.h>
 
-//const int tempPathLength = 8;
-//double tempPath[tempPathLength] = { -500,-500, 10,10, 100,0, 300,300 };
 
 typedef union {
 	float number;
@@ -81,18 +80,18 @@ void ArduinoBlue::processTextTransmission() {
 // TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
 	//noInterrupts();
-	Serial.println(_pathAvailable);
 	_pathAvailable = storePathTransmission();
     clearSignalArray();
 	//interrupts();
 }
 
-void ArduinoBlue::sendLocation(double xPos, double yPos, double headingAngle, int pathIndex) {
+void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float xGoal, float yGoal) {
 	_bluetooth.print((char)LOCATION_TRANSMISSION_START);
 	sendFloatAsBytes((float)xPos);
 	sendFloatAsBytes((float)yPos);
 	sendFloatAsBytes((float)headingAngle);
-	sendFloatAsBytes((float)pathIndex);
+	sendFloatAsBytes((float)xGoal);
+	sendFloatAsBytes((float)yGoal);
 }
 
 // TODO: May not be needed.
@@ -115,21 +114,21 @@ float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) 
 }
 
 bool ArduinoBlue::storePathTransmission() {
+	const int BYTES_PER_FLOAT = 4;
+
 	// Delete the previously stored path if available.
-	delete[] _path;
+	delete[] _pathX;
+	delete[] _pathY;
 
 	unsigned long prevMillis = millis();
 	uint8_t intRead;
-	double xVal, yVal;
-	const int BYTES_PER_FLOAT = 4;
 	int bytesReadIteration = 0;
 	int numbersRead = 0;
-	int index = -1;
 	uint8_t ary[BYTES_PER_FLOAT];
 	_pathLength = 9999; // Get in the loop
 
 	// Read the float values corresponding to the path data.
-	while (numbersRead < _pathLength * 2) {
+	while (numbersRead <= _pathLength * 2) {
 		if (_bluetooth.available()) {
 
 			intRead = _bluetooth.read();
@@ -139,29 +138,39 @@ bool ArduinoBlue::storePathTransmission() {
 
 			if (bytesReadIteration == BYTES_PER_FLOAT) {
 				// Convert the byte array to float array.
-				double number = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
+				float number = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
+				numbersRead++;
 
 				// The first path data transmitted is the length.
-				if (index == -1) {
+				if (numbersRead == 1) {
 					_pathLength = (int)number;
-					_path = new double[_pathLength * 2];
-					//Serial.print("Path length: "); Serial.println(_pathLength);
+					_pathX = new float[_pathLength];
+					_pathY = new float[_pathLength];
+					Serial.print("Path length: "); Serial.println(_pathLength);
 				}
 				// Subsequent path data transmission are the coordinates.
 				else {
-					_path[index] = number;
-					numbersRead++;
-					//Serial.print("Number Read: "); Serial.println(number);
+					if (numbersRead % 2 == 0) {
+						_pathX[numbersRead/2 - 1] = number;
+						Serial.print(number);
+					}
+					else {
+						_pathY[numbersRead/2 - 1] = number;
+						Serial.print("\t"); Serial.println(number);
+					}
+					//Serial.print("Number Read: "); Serial.println(numberReadCount);
 				}
-				index++;
 				bytesReadIteration = 0;
 			}
-		}
+		}   
 		if (millis() - prevMillis > PATH_TRANSMISSION_TIMEOUT) {
 			//Serial.println("Error: path transmission took too long.");
 			//return false;
 		}
 	}
+
+	pathSpline.initialize(_pathX, _pathY, _pathLength, Catmull);
+
 	return true;
 }
 
@@ -254,21 +263,20 @@ int ArduinoBlue::getSteering() {
     return _steering;
 }
 
-double * ArduinoBlue::getPath() {
-	return _path;
+float * ArduinoBlue::getPathArrayX() {
+	return _pathX;
 }
 
-double ArduinoBlue::getPathX(int i) {
-	return _path[i * 2];
-	//return tempPath[i * 2];
+float * ArduinoBlue::getPathArrayY() {
+	return _pathY;
 }
 
-double ArduinoBlue::getPathY(int i) {
-	return _path[i * 2 + 1];
-	//return tempPath[i * 2 + 1];
+float ArduinoBlue::getPathY(float x) {
+	// Interpolate between the points to get a smooth curve.
+	return pathSpline.value(x);
 }
 
-double ArduinoBlue::getPathLength() {
+int ArduinoBlue::getPathLength() {
 	return _pathLength;
 	//return tempPathLength;
 }
