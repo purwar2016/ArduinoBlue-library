@@ -1,5 +1,5 @@
 /*
-* Demo program to demonstrate the features of the app.
+ArduinoBlue example code to demonstrate the features of the app.
 */
 
 #include <SoftwareSerial.h>
