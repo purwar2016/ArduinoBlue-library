@@ -1,5 +1,5 @@
 /*
-* Control the brightness of LED using a slider.
+* ArduinoBlue-library example code to control the brightness of an LED using a slider.
 */
 
 #include <SoftwareSerial.h>
