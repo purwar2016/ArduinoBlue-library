@@ -1,5 +1,5 @@
 /*
-* Demo program for controling red, green, and blue LED.
+* ArduinoBlue example code for controling red, green, and blue LEDs.
 */
 
 #include <SoftwareSerial.h>
