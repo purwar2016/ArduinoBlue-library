@@ -1,5 +1,5 @@
 /*
-ArduinoBlue-library demo for driving differential drive robot.
+ArduinoBlue-library example code for controlling differential drive robot with two continuous rotation servos.
 Instructions:
   1. Set the pin constants.
   2. Connect with app and drive. If the robot goes backwards, set DIRECTION to -1.
