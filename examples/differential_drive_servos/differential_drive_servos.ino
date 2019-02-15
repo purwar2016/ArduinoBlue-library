@@ -19,8 +19,8 @@ const int SERVO_RIGHT_PIN = 0;
 // HM10 BLUETOOTH MODULE PINS
 // NOTE: Not all pins on your Arduino may support SoftwareSerial.
 // Please check: https://www.arduino.cc/en/Reference/softwareSerial
-const int BLUETOOTH_TX = 50;
-const int BLUETOOTH_RX = 51;
+const int BLUETOOTH_TX = 8;
+const int BLUETOOTH_RX = 7;
 
 
 SoftwareSerial softSerial(BLUETOOTH_TX, BLUETOOTH_RX); // Object for serial communication to HM 10 bluetooth module using ditigal pins.
@@ -37,80 +37,80 @@ Servo servoRight;
 
 
 void driveControl() {
-	// THROTTLE AND STEERING CONTROL
-	// throttle values after subtracting 49:
-	//     50 = max forward throttle
-	//     0 = no throttole
-	//     -49 = max reverse throttle
-	// steering values after subtracting 49:
-	//     50 = max right
-	//     0 = straight
-	//     -49 = max left
-	int throttle = phone.getThrottle() - 49;
-	int steering = phone.getSteering() - 49;
+  // THROTTLE AND STEERING CONTROL
+  // throttle values after subtracting 49:
+  //     50 = max forward throttle
+  //     0 = no throttole
+  //     -49 = max reverse throttle
+  // steering values after subtracting 49:
+  //     50 = max right
+  //     0 = straight
+  //     -49 = max left
+  int throttle = phone.getThrottle() - 49;
+  int steering = phone.getSteering() - 49;
 
-	if (throttle == 0) {
-		// If throttle is zero, don't move.
-		servoLeft.write(90);
-		servoRight.write(90);
-		return;
-	}
+  if (throttle == 0) {
+    // If throttle is zero, don't move.
+    servoLeft.write(90);
+    servoRight.write(90);
+    return;
+  }
 
-	// Map throttle to PWM range.
-	int mappedSpeed = map(abs(throttle), 0, 50, MINIMUM_SERVO_SPEED, 90);
-	// Map steering to PWM range.
-	int reducedSpeed = map(abs(steering), 0, 50, mappedSpeed, MINIMUM_SERVO_SPEED);
+  // Map throttle to PWM range.
+  int mappedSpeed = map(abs(throttle), 0, 50, MINIMUM_SERVO_SPEED, 90);
+  // Map steering to PWM range.
+  int reducedSpeed = map(abs(steering), 0, 50, mappedSpeed, MINIMUM_SERVO_SPEED);
 
-	int leftMotorSpeed, rightMotorSpeed;
-	if (steering > 0) {
-		// Turn Right: reduce right motor speed
-		leftMotorSpeed = mappedSpeed;
-		rightMotorSpeed = reducedSpeed;
-	}
-	else {
-		// Turn Left: reduce left motor speed
-		leftMotorSpeed = reducedSpeed;
-		rightMotorSpeed = mappedSpeed;
-	}
+  int leftMotorSpeed, rightMotorSpeed;
+  if (steering > 0) {
+    // Turn Right: reduce right motor speed
+    leftMotorSpeed = mappedSpeed;
+    rightMotorSpeed = reducedSpeed;
+  }
+  else {
+    // Turn Left: reduce left motor speed
+    leftMotorSpeed = reducedSpeed;
+    rightMotorSpeed = mappedSpeed;
+  }
 
-	// Set motor speeds
-	if (throttle > 0) {
-		// Forward
-		servoLeft.write(90+leftMotorSpeed*DIRECTION);
-		servoRight.write(90-rightMotorSpeed*DIRECTION);
-	}
-	else {
-		// Backward
-		servoLeft.write(90-leftMotorSpeed*DIRECTION);
-		servoRight.write(90+rightMotorSpeed*DIRECTION);
-	}
+  // Set motor speeds
+  if (throttle > 0) {
+    // Forward
+    servoLeft.write(90+leftMotorSpeed*DIRECTION);
+    servoRight.write(90-rightMotorSpeed*DIRECTION);
+  }
+  else {
+    // Backward
+    servoLeft.write(90-leftMotorSpeed*DIRECTION);
+    servoRight.write(90+rightMotorSpeed*DIRECTION);
+  }
 
-	// Print Debug Info
-	//  Serial.print("throttle: "); Serial.print(throttle);
-	//  Serial.print("\tsteering: "); Serial.print(steering);
-	//  Serial.print("\tmappedSpeed: "); Serial.print(mappedSpeed);
-	//  Serial.print("\treducedSpeed: "); Serial.print(reducedSpeed);
-	//  Serial.print("\tleftMotorSpeed: "); Serial.print(leftMotorSpeed);
-	//  Serial.print("\trightMotorSpeed: "); Serial.println(rightMotorSpeed);
+  // Print Debug Info
+  //  Serial.print("throttle: "); Serial.print(throttle);
+  //  Serial.print("\tsteering: "); Serial.print(steering);
+  //  Serial.print("\tmappedSpeed: "); Serial.print(mappedSpeed);
+  //  Serial.print("\treducedSpeed: "); Serial.print(reducedSpeed);
+  //  Serial.print("\tleftMotorSpeed: "); Serial.print(leftMotorSpeed);
+  //  Serial.print("\trightMotorSpeed: "); Serial.println(rightMotorSpeed);
 }
 
 void setup() {
-	delay(500);
+  delay(500);
 
-	// Start communication with HM10 bluetooth module.
-	softSerial.begin(9600);
+  // Start communication with HM10 bluetooth module.
+  softSerial.begin(9600);
 
-	// Begin serial communication with computer.
-	Serial.begin(9600);
+  // Begin serial communication with computer.
+  Serial.begin(9600);
 
-	// Attach servos
-	servoLeft.attach(SERVO_LEFT_PIN);
-	servoRight.attach(SERVO_RIGHT_PIN);
+  // Attach servos
+  servoLeft.attach(SERVO_LEFT_PIN);
+  servoRight.attach(SERVO_RIGHT_PIN);
 
-	Serial.println("SETUP COMPLETE");
+  Serial.println("SETUP COMPLETE");
 }
 
 void loop() {
-	// Refer to comment on top for step by step instructions.
-	driveControl();
+  // Refer to comment on top for step by step instructions.
+  driveControl();
 }
