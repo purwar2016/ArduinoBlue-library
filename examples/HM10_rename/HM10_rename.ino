@@ -1,5 +1,6 @@
 /*
- * Renames the HM 10 bluetooth module
+Code to rename HM10 bluetooth module.
+See comments.
  */
 
 #include <SoftwareSerial.h>
