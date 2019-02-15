@@ -5,7 +5,7 @@ Instructions:
   2. Edit the motorSetForward, motorSetBackward, and motorBrake functions as necessary (see comments).
   3. Test the functions from step 2 by calling them and setting the motor speed to max (see doTesting function)
 		CAUTION: The motor set functions must not set the motor speed. This function simply configures the motor controller.
-  4. Uncomment controlDrive function and comment doTesting function in the loop
+  4. Uncomment driveControl function and comment doTesting function in the loop
   5. Connect to app and drive.
  */
 
@@ -79,7 +79,7 @@ void setPins() {
 	pinMode(IN4, OUTPUT);
 }
 
-void controlDrive() {
+void driveControl() {
 	// THROTTLE AND STEERING CONTROL
 	// throttle values after subtracting 49:
 	//     50 = max forward throttle
@@ -167,5 +167,5 @@ void setup() {
 void loop() {
 	// Refer to comment on top for step by step instructions.
 	doTesting(); // Comment this after testing.
-	// controlDrive(); // Uncomment this after testing.
+	// driveControl(); // Uncomment this after testing.
 }
