@@ -1,5 +1,8 @@
 /*
 ArduinoBlue example code to demonstrate the features of the app.
+Instruction:
+1. Check BLUETOOTH_TX and BLUETOOTH_RX pins
+2. Connect Arduino to ArduinoBlue app and open serial monitor.
 */
 
 #include <SoftwareSerial.h>
