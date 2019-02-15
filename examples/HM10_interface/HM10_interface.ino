@@ -1,3 +1,8 @@
+/*
+Code to interface with HM10 bluetooth module. Change baud rate, check HM10 firmware version, etc.
+More information here: http://www.martyncurrey.com/hm-10-bluetooth-4ble-modules/
+*/
+
 #include <SoftwareSerial.h>
 
 const int BLUETOOTH_TX = 8;
