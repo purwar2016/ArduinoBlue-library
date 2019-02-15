@@ -1,5 +1,5 @@
 /*
-ArduinoBlue-library demo for driving differential drive robot.
+ArduinoBlue-library example code for controlling differential drive robot with two DC motors.
 Instructions:
   1. Set the pin constants.
   2. Edit the motorSetForward, motorSetBackward, and motorBrake functions as necessary (see comments).
