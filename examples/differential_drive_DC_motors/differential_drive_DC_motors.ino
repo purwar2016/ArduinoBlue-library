@@ -156,7 +156,7 @@ void setup() {
 	softSerial.begin(9600);
 
 	// Begin serial communication with computer.
-	Serial.begin(115200);
+	Serial.begin(9600);
 
 	// Set pin modes
 	setPins();
