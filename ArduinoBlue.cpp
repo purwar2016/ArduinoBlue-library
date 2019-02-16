@@ -7,13 +7,6 @@ Contact: jaean37@gmail.com
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
-#include <spline.h>
-
-
-typedef union {
-	float number;
-	uint8_t bytes[4];
-} FLOATUNION_t;
 
 ArduinoBlue::ArduinoBlue(Stream &output) :
         _bluetooth(output)
@@ -52,6 +45,19 @@ bool ArduinoBlue::checkBluetooth() {
     return isDataRead;
 }
 
+// Stores short transmission into the signal array
+void ArduinoBlue::storeShortTransmission() {
+    unsigned long prevMillis = millis();
+    uint8_t intRead;
+    while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
+        if (_bluetooth.available()) {
+            intRead = _bluetooth.read();
+            if (intRead == TRANSMISSION_END) break;
+            pushToSignalArray(intRead);
+        }
+    }
+}
+
 void ArduinoBlue::processDriveTransmission() {
     storeShortTransmission();
     _throttle = _signal[0];
@@ -77,114 +83,8 @@ void ArduinoBlue::processTextTransmission() {
     clearSignalArray();
 }
 
-// TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
-	//noInterrupts();
-	_pathAvailable = storePathTransmission();
     clearSignalArray();
-	//interrupts();
-}
-
-void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float xGoal, float yGoal) {
-	_bluetooth.print((char)LOCATION_TRANSMISSION_START);
-	sendFloatAsBytes((float)xPos);
-	sendFloatAsBytes((float)yPos);
-	sendFloatAsBytes((float)headingAngle);
-	sendFloatAsBytes((float)xGoal);
-	sendFloatAsBytes((float)yGoal);
-}
-
-// TODO: May not be needed.
-void ArduinoBlue::sendFloatAsBytes(float num) {
-	FLOATUNION_t floatUnion;
-	floatUnion.number = num;
-	_bluetooth.print((char)floatUnion.bytes[0]);
-	_bluetooth.print((char)floatUnion.bytes[1]);
-	_bluetooth.print((char)floatUnion.bytes[2]);
-	_bluetooth.print((char)floatUnion.bytes[3]);
-}
-
-float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) {
-	FLOATUNION_t floatUntion;
-	floatUntion.bytes[0] = u1;
-	floatUntion.bytes[1] = u2;
-	floatUntion.bytes[2] = u3;
-	floatUntion.bytes[3] = u4;
-	return floatUntion.number;
-}
-
-bool ArduinoBlue::storePathTransmission() {
-	const int BYTES_PER_FLOAT = 4;
-
-	// Delete the previously stored path if available.
-	delete[] _pathX;
-	delete[] _pathY;
-
-	unsigned long prevMillis = millis();
-	uint8_t intRead;
-	int bytesReadIteration = 0;
-	int numbersRead = 0;
-	uint8_t ary[BYTES_PER_FLOAT];
-	_pathLength = 9999; // Get in the loop
-
-	// Read the float values corresponding to the path data.
-	while (numbersRead <= _pathLength * 2) {
-		if (_bluetooth.available()) {
-
-			intRead = _bluetooth.read();
-
-			ary[bytesReadIteration] = intRead;
-			bytesReadIteration++;
-
-			if (bytesReadIteration == BYTES_PER_FLOAT) {
-				// Convert the byte array to float array.
-				float number = bytesToFloat(ary[0], ary[1], ary[2], ary[3]);
-				numbersRead++;
-
-				// The first path data transmitted is the length.
-				if (numbersRead == 1) {
-					_pathLength = (int)number;
-					_pathX = new float[_pathLength];
-					_pathY = new float[_pathLength];
-					Serial.print("Path length: "); Serial.println(_pathLength);
-				}
-				// Subsequent path data transmission are the coordinates.
-				else {
-					if (numbersRead % 2 == 0) {
-						_pathX[numbersRead/2 - 1] = number;
-						Serial.print(number);
-					}
-					else {
-						_pathY[numbersRead/2 - 1] = number;
-						Serial.print("\t"); Serial.println(number);
-					}
-					//Serial.print("Number Read: "); Serial.println(numberReadCount);
-				}
-				bytesReadIteration = 0;
-			}
-		}   
-		if (millis() - prevMillis > PATH_TRANSMISSION_TIMEOUT) {
-			//Serial.println("Error: path transmission took too long.");
-			//return false;
-		}
-	}
-
-	pathSpline.initialize(_pathX, _pathY, _pathLength, Catmull);
-
-	return true;
-}
-
-// Stores short transmission into the signal array
-void ArduinoBlue::storeShortTransmission() {
-	unsigned long prevMillis = millis();
-	uint8_t intRead;
-	while (millis() - prevMillis < SHORT_TRANSMISSION_TIMEOUT) {
-		if (_bluetooth.available()) {
-			intRead = _bluetooth.read();
-			if (intRead == TRANSMISSION_END) break;
-			pushToSignalArray(intRead);
-		}
-	}
 }
 
 String ArduinoBlue::readString() {
@@ -215,7 +115,6 @@ void ArduinoBlue::pushToSignalArray(uint8_t elem) {
     }
     else {
         Serial.println("ArduinoBlue: Transmission error...");
-		Serial.print("elem: "); Serial.println(elem);
     }
 }
 
@@ -224,10 +123,6 @@ void ArduinoBlue::clearSignalArray() {
         _signal[i] = DEFAULT_VALUE;
     }
     _signalLength = 0;
-}
-
-bool ArduinoBlue::isPathAvailable() {
-	return _pathAvailable;
 }
 
 int ArduinoBlue::getButton() {
@@ -261,24 +156,6 @@ int ArduinoBlue::getThrottle() {
 int ArduinoBlue::getSteering() {
     checkBluetooth();
     return _steering;
-}
-
-float * ArduinoBlue::getPathArrayX() {
-	return _pathX;
-}
-
-float * ArduinoBlue::getPathArrayY() {
-	return _pathY;
-}
-
-float ArduinoBlue::getPathY(float x) {
-	// Interpolate between the points to get a smooth curve.
-	return pathSpline.value(x);
-}
-
-int ArduinoBlue::getPathLength() {
-	return _pathLength;
-	//return tempPathLength;
 }
 
 void ArduinoBlue::sendText(String msg) {
