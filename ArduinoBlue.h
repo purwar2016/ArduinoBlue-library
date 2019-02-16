@@ -1,18 +1,14 @@
 /*
-Name: ArduinoBlue.h
+Name: ArduinoBlue.cpp
 Created: 6/28/2017 11:00:39 AM
 Author: Jae An
 Contact: jaean37@gmail.com
 */
 
-#ifndef ArduinoBlue_h
-#define ArduinoBlue_h
-
+#ifndef _ArduinoBlue_h
+#define _ArduinoBlue_h
 #include <Arduino.h>
-#include <Spline.h>
 
-#define LOCATION_TRANSMISSION_START 246
-#define DELIMETER 247
 #define TEXT_SEND_TRANSMISSION 248
 #define CONNECTION_CHECK 249
 #define TRANSMISSION_END 250
@@ -26,14 +22,10 @@ Contact: jaean37@gmail.com
 
 #define TEXT_TRANSMISSION_TIMEOUT 5000 // ms
 #define SHORT_TRANSMISSION_TIMEOUT 500
-#define PATH_TRANSMISSION_TIMEOUT 10000
-
-#define MAX_PATH_LENGTH 75
 
 const uint8_t DEFAULT_STEERING = 49;
 const uint8_t DEFAULT_THROTTLE = 49;
 const uint8_t MAX_SHORT_SIGNAL_LENGTH = 3;
-
 
 class ArduinoBlue
 {
@@ -44,21 +36,13 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
-    float * getPathArrayX();
-    float * getPathArrayY();
-    float getPathY(float);
-    int getPathLength();
     bool checkBluetooth();
     bool isConnected();
-    bool isPathAvailable();
     void sendText(String msg);
     void sendMessage(String msg);
-    void sendLocation(float, float, float, float, float);
-    static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
 private:
     Stream & _bluetooth;
-    Spline pathSpline;
     uint8_t _signal[MAX_SHORT_SIGNAL_LENGTH];
     uint8_t _signalLength = 0;
     uint8_t _throttle = DEFAULT_STEERING;
@@ -66,22 +50,15 @@ private:
     uint8_t _sliderVal = DEFAULT_VALUE;
     uint8_t _sliderId = DEFAULT_VALUE;
     uint8_t _button = DEFAULT_VALUE;
-    bool _pathAvailable = false;
     String _text;
-    float * _pathX;
-    float * _pathY;
-    float _prevReturnXx;
-    int _pathLength;
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
-    bool storePathTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
     void processSliderTransmission();
     void processTextTransmission();
     void processPathTransmission();
-    void sendFloatAsBytes(float);
     String readString();
 };
 
