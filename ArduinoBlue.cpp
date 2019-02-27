@@ -162,7 +162,7 @@ bool ArduinoBlue::storePathTransmission() {
 				}
 				bytesReadIteration = 0;
 			}
-		}   
+		}
 		if (millis() - prevMillis > PATH_TRANSMISSION_TIMEOUT) {
 			//Serial.println("Error: path transmission took too long.");
 			//return false;
