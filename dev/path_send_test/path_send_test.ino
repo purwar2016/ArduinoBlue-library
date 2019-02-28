@@ -13,9 +13,7 @@ const int BLUETOOTH_TX = 8;
 // Bluetooth RX -> Arduino D7
 const int BLUETOOTH_RX = 7;
 
-int prevThrottle = 49;
-int prevSteering = 49;
-int throttle, steering, sliderVal, button, sliderId;
+int button;
 
 bool hasPathPrinted = false;
 
@@ -24,8 +22,8 @@ ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBl
 
 // Setup code runs once after program starts.
 void setup() {
-	// Start serial monitor at 9600 bps.
-	Serial.begin(9600);
+	// Start serial monitor at 115200 bps.
+	Serial.begin(115200);
 
 	// Start bluetooth serial at 9600 bps.
 	bluetooth.begin(9600);
@@ -33,7 +31,9 @@ void setup() {
 	// delay just in case bluetooth module needs time to "get ready".
 	delay(100);
 
-	Serial.println("setup complete");
+	Serial.println("\n\n______________________________________________________________________________________________________________________________________");
+	Serial.println("SETUP COMPLETE");
+	Serial.println("PATH SEND TEST\n\n");
 }
 
 void printCoordinate(float x, float y) {
@@ -43,45 +43,66 @@ void printCoordinate(float x, float y) {
 
 // Put your main code here, to run repeatedly:
 void loop() {
-	// ID of the button pressed pressed.
 	button = phone.getButton();
-
-	// Display button data whenever its pressed.
 	if (button != -1) {
-		Serial.print("Button: ");
-		Serial.println(button);
+		// Test if bluetooth is working properly by pressing any button.
+		Serial.print("Button: "); Serial.println(button);
 	}
 
 	if (phone.isPathAvailable() && !hasPathPrinted) {
-		// GET THE PATH
+		// PRINT INTERPOLATED PATH
+		// Get the path data
 		int length = phone.getPathLength();
 		float * pathX = phone.getPathArrayX();
 		float * pathY = phone.getPathArrayY();
 
-		// PRINT RECEIVED PATH POINTS
-		Serial.println("__________________ PRINTING PATH ____________________");
+		// Print the path data
+		Serial.println("______________________________________________________________________________________________________________________________________");
+		Serial.println("ACTUAL PATH\n");
 		for (int i = 0; i < length; i++) {
 			printCoordinate(pathX[i], pathY[i]);
 		}
 
-		// PRINT INTERPOLATED POINTS
-		// Interpolates points between X coordinates from path x array that are indexStep apart.
-		const int indexStep = 3;
-		// StepX defines the distance between each interpolation.
-		const int stepX = 10;
+		// PRINT INTERPOLATED PATH
+		double step = 3;
+		double distance, xCurr, yCurr, x0, y0, x1, y1;
+		int numPtsIter;
 
-		Serial.println("__________________ Interpolation Test ________________");
-		int index = 0;
-		while (index < length - indexStep) {
-			int startX = pathX[index];
-			int endX = pathX[index + indexStep];
+		Serial.println("______________________________________________________________________________________________________________________________________");
+		Serial.println("INTERPOLATED PATH\n");
 
-			for (int x = startX; x < endX; x += stepX) {
-				printCoordinate(x, phone.getPathY(x));
+		for (int i = 1; i < length - 2; i++) {
+			// 1. Get the ith and (i+1)st coordinate
+			x0 = pathX[i];
+			y0 = pathY[i];
+			x1 = pathX[i + 1];
+			y1 = pathY[i + 1];
+
+			// 2. Get distance between them
+			distance = sqrt((x1 - x0)*(x1 - x0) + (y1 - y0)*(y1 - y0));
+
+			// 3. Get number of points needed
+			numPtsIter = (int) distance / step;
+
+			/*Serial.print("x0: "); Serial.print(x0);
+			Serial.print("\ty0: "); Serial.print(y0);
+			Serial.print("\tx1: "); Serial.print(x1);
+			Serial.print("\ty1: "); Serial.print(y1);
+			Serial.print("\td: "); Serial.print(distance);
+			Serial.print("\tnum: "); Serial.println(numPtsIter);*/
+
+			// 4. Interpolate and print
+			xCurr = x0;
+			yCurr = y0;
+			printCoordinate(x0, y0); // Print the ith coordinate
+			for (int j = 0; j < numPtsIter; j++) {
+				xCurr += step;
+				yCurr = phone.getPathY(xCurr);
+				printCoordinate(xCurr, yCurr);
 			}
-
-			index += indexStep;
+			printCoordinate(x1, y1); // Print the (i+1)st coordinate
 		}
-		hasPathPrinted = true;
+
+		hasPathPrinted = true; // So it won't keep on printing
 	}
 }
