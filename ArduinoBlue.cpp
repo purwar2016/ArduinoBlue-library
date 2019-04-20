@@ -7,7 +7,6 @@ Contact: jaean37@gmail.com
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
-#include <spline.h>
 
 
 typedef union {
@@ -146,17 +145,17 @@ bool ArduinoBlue::storePathTransmission() {
 					_pathLength = (int)number;
 					_pathX = new float[_pathLength];
 					_pathY = new float[_pathLength];
-					Serial.print("Path length: "); Serial.println(_pathLength);
+					// Serial.print("Path length: "); Serial.println(_pathLength);
 				}
 				// Subsequent path data transmission are the coordinates.
 				else {
 					if (numbersRead % 2 == 0) {
 						_pathX[numbersRead/2 - 1] = number;
-						Serial.print(number);
+						// Serial.print(number);
 					}
 					else {
 						_pathY[numbersRead/2 - 1] = number;
-						Serial.print("\t"); Serial.println(number);
+						// Serial.print("\t"); Serial.println(number);
 					}
 					//Serial.print("Number Read: "); Serial.println(numberReadCount);
 				}
@@ -168,8 +167,6 @@ bool ArduinoBlue::storePathTransmission() {
 			//return false;
 		}
 	}
-
-	pathSpline.initialize(_pathX, _pathY, _pathLength, Catmull);
 
 	return true;
 }
@@ -227,7 +224,9 @@ void ArduinoBlue::clearSignalArray() {
 }
 
 bool ArduinoBlue::isPathAvailable() {
-	return _pathAvailable;
+	bool toReturn = _pathAvailable;
+	_pathAvailable = false;
+	return toReturn;
 }
 
 int ArduinoBlue::getButton() {
@@ -269,11 +268,6 @@ float * ArduinoBlue::getPathArrayX() {
 
 float * ArduinoBlue::getPathArrayY() {
 	return _pathY;
-}
-
-float ArduinoBlue::getPathY(float x) {
-	// Interpolate between the points to get a smooth curve.
-	return pathSpline.value(x);
 }
 
 int ArduinoBlue::getPathLength() {
