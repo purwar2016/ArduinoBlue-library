@@ -9,7 +9,6 @@ Contact: jaean37@gmail.com
 #define ArduinoBlue_h
 
 #include <Arduino.h>
-#include <Spline.h>
 
 #define LOCATION_TRANSMISSION_START 246
 #define DELIMETER 247
@@ -58,7 +57,6 @@ public:
     String getText();
 private:
     Stream & _bluetooth;
-	Spline pathSpline;
     uint8_t _signal[MAX_SHORT_SIGNAL_LENGTH];
     uint8_t _signalLength = 0;
     uint8_t _throttle = DEFAULT_STEERING;
