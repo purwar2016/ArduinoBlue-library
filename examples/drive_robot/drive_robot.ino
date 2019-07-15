@@ -13,6 +13,7 @@ Instructions:
 #include <SoftwareSerial.h> // SoftwareSerial for serial communication with HM10 bluetooth module.
 #include <ArduinoBlue.h> // ArduinoBlue bluetooth library
 
+const unsigned long BAUD_RATE = 9600;
 
 // MOTOR LEFT PINS
 const int ENA = 11;
@@ -153,10 +154,10 @@ void setup() {
 	delay(500);
 
 	// Start communication with HM10 bluetooth module.
-	softSerial.begin(9600);
+	softSerial.begin(BAUD_RATE);
 
 	// Begin serial communication with computer.
-	Serial.begin(115200);
+	Serial.begin(BAUD_RATE);
 
 	// Set pin modes
 	setPins();
