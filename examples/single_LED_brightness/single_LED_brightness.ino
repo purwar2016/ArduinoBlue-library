@@ -5,6 +5,7 @@
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
 
+const unsigned long BAUD_RATE = 9600;
 
 // The bluetooth tx and rx pins must be supported by software serial.
 // Visit https://www.arduino.cc/en/Reference/SoftwareSerial for unsupported pins.
@@ -22,11 +23,9 @@ ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBl
 bool isLedOn = false;
 
 void setup() {
-    // Start serial monitor at 9600 bps.
-    Serial.begin(9600);
-
-    // Start bluetooth serial at 9600 bps.
-    bluetooth.begin(9600);
+    // Start serial communciations
+    Serial.begin(BAUD_RATE);
+    bluetooth.begin(BAUD_RATE);
 
     // delay just in case bluetooth module needs time to "get ready".
     delay(100);
