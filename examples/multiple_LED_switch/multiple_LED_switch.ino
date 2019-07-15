@@ -5,6 +5,8 @@
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
 
+const unsigned long BAUD_RATE = 9600;
+
 const int RED_PIN = 13;
 const int GREEN_PIN = 12;
 const int BLUE_PIN = 4;
@@ -25,11 +27,9 @@ bool greenOn;
 bool blueOn;
 
 void setup() {
-  // Start serial monitor at 9600 bps.
-    Serial.begin(9600);
-
-  // Start bluetooth serial at 9600 bps.
-  bluetooth.begin(9600);
+  // Start serial communications.
+  Serial.begin(BAUD_RATE);
+  bluetooth.begin(BAUD_RATE);
 
   // delay just in case bluetooth module needs time to "get ready".
   delay(100);
