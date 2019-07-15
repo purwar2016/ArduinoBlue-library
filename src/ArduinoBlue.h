@@ -1,15 +1,16 @@
 /*
 Name: ArduinoBlue.h
-Created: 6/28/2017 11:00:39 AM
 Author: Jae An
-Contact: jaean37@gmail.com
 */
 
 #ifndef ArduinoBlue_h
 #define ArduinoBlue_h
 
+#include "FunctionType.h"
 #include <Arduino.h>
 
+#define PATH_TRANSMISSION 244
+#define PATH_TRANSMISSION_CONFIRMATION 245
 #define LOCATION_TRANSMISSION_START 246
 #define DELIMETER 247
 #define TEXT_SEND_TRANSMISSION 248
@@ -19,7 +20,6 @@ Contact: jaean37@gmail.com
 #define BUTTON_TRANSMISSION 252
 #define SLIDER_TRANSMISSION 253
 #define TEXT_TRANSMISSION 254
-#define PATH_TRANSMISSION 255
 
 #define DEFAULT_VALUE 255
 
@@ -27,7 +27,7 @@ Contact: jaean37@gmail.com
 #define SHORT_TRANSMISSION_TIMEOUT 500
 #define PATH_TRANSMISSION_TIMEOUT 10000
 
-#define MAX_PATH_LENGTH 75
+#define PATH_OVERFLOW_VALUE 1000000
 
 const uint8_t DEFAULT_STEERING = 49;
 const uint8_t DEFAULT_THROTTLE = 49;
@@ -55,6 +55,7 @@ public:
 	void sendLocation(float, float, float, float, float);
 	static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
+    void setInterruptToggle(functiontype attach, functiontype detach);
 private:
     Stream & _bluetooth;
     uint8_t _signal[MAX_SHORT_SIGNAL_LENGTH];
@@ -80,7 +81,11 @@ private:
     void processTextTransmission();
     void processPathTransmission();
 	void sendFloatAsBytes(float);
+    void attachInterrupts();
+    void detachInterrupts();
     String readString();
+    functiontype _attachInterrupts = nullptr;
+    functiontype _detachInterrupts = nullptr;
 };
 
 #endif
