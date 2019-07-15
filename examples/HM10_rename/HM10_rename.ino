@@ -5,6 +5,7 @@
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
 
+const unsigned long BAUD_RATE = 9600;
 
 // PINS
 const int BLUETOOTH_TX = 8;
@@ -15,8 +16,8 @@ ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBl
 
 void setup() {
 
-    // Start bluetooth serial at 9600 bps
-    bluetooth.begin(9600);
+    // Start bluetooth serial
+    bluetooth.begin(BAUD_RATE);
 
     delay(1000);
 
