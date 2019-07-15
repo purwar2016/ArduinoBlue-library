@@ -1,6 +1,8 @@
 
 #include <SoftwareSerial.h>
 
+const unsigned long BAUD_RATE = 9600;
+
 const int BLUETOOTH_TX = 7;
 const int BLUETOOTH_RX = 4;
 
@@ -9,8 +11,10 @@ const int READ_TIME = 500;
 SoftwareSerial bt(BLUETOOTH_TX, BLUETOOTH_RX);
 
 void setup() {
-	bt.begin(9600);
-	Serial.begin(115200);
+	// Baud rate must be same for bluetooth and serial.
+	// It helps to prevent interference.
+	bt.begin(BAUD_RATE);
+	Serial.begin(BAUD_RATE);
 	Serial.println("Setup Complete");
 }
 
