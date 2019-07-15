@@ -78,10 +78,13 @@ void ArduinoBlue::processTextTransmission() {
 
 // TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
-	//noInterrupts();
+    detachInterrupts();
 	_pathAvailable = storePathTransmission();
+    _bluetooth.print((char)PATH_TRANSMISSION_CONFIRMATION);
+    _bluetooth.flush();
+
     clearSignalArray();
-	//interrupts();
+    attachInterrupts();
 }
 
 void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float xGoal, float yGoal) {
@@ -149,13 +152,22 @@ bool ArduinoBlue::storePathTransmission() {
 				}
 				// Subsequent path data transmission are the coordinates.
 				else {
-					if (numbersRead % 2 == 0) {
-						_pathX[numbersRead/2 - 1] = number;
-						// Serial.print(number);
+					int index = numbersRead / 2 - 1;
+					if (fabs(number) > PATH_OVERFLOW_VALUE) {
+						// If any value has overflowed and is invalid use the previous coordinate.
+						// TODO: Consider the case when the index is 0.
+						_pathX[index] = _pathX[index - 1];
+						_pathY[index] = _pathY[index - 1];
 					}
 					else {
-						_pathY[numbersRead/2 - 1] = number;
-						// Serial.print("\t"); Serial.println(number);
+						if (numbersRead % 2 == 0) {
+							_pathX[index] = number;
+							// Serial.print(number);
+						}
+						else {
+							_pathY[index] = number;
+							// Serial.print("\t"); Serial.println(number);
+						}
 					}
 					//Serial.print("Number Read: "); Serial.println(numberReadCount);
 				}
@@ -167,7 +179,6 @@ bool ArduinoBlue::storePathTransmission() {
 			//return false;
 		}
 	}
-
 	return true;
 }
 
@@ -211,8 +222,8 @@ void ArduinoBlue::pushToSignalArray(uint8_t elem) {
         _signalLength++;
     }
     else {
-        Serial.println("ArduinoBlue: Transmission error...");
-		Serial.print("elem: "); Serial.println(elem);
+        // Serial.println("ArduinoBlue: Transmission error...");
+		// Serial.print("elem: "); Serial.println(elem);
     }
 }
 
@@ -299,4 +310,26 @@ String ArduinoBlue::getText() {
     String ret = _text;
     _text = "";
     return ret;
+}
+
+void ArduinoBlue::setInterruptToggle(functiontype attach, functiontype detach)
+{
+    _attachInterrupts = attach;
+    _detachInterrupts = detach;
+}
+
+void ArduinoBlue::attachInterrupts()
+{
+    if (_attachInterrupts != nullptr)
+    {
+        _attachInterrupts();
+    }
+}
+
+void ArduinoBlue::detachInterrupts()
+{
+    if (_detachInterrupts != nullptr)
+    {
+        _detachInterrupts();
+    }
 }
