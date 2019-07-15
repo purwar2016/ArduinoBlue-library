@@ -1,11 +1,13 @@
 /*
-Uses hardware serial instead of software serial.
+Uses built-in hardware serial instead of software serial.
 Recommended for Arduino boards with more than one serial ports.
 https://www.arduino.cc/reference/en/language/functions/communication/serial/
 */
 
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
+
+const unsigned long BAUD_RATE = 9600;
 
 int prevThrottle = 49;
 int prevSteering = 49;
@@ -16,13 +18,10 @@ ArduinoBlue phone(Serial2);
 
 // Setup code runs once after program starts.
 void setup() {
-    // Start serial monitor at 9600 bps.
-    Serial.begin(9600);
-
-    // Start bluetooth serial at 9600 bps.
-    Serial2.begin(9600);
-
-    // delay just in case bluetooth module needs time to "get ready".
+    // Start serial communications
+    Serial.begin(BAUD_RATE);
+    Serial2.begin(BAUD_RATE);
+    
     delay(100);
 
     Serial.println("setup complete");
