@@ -5,6 +5,8 @@
 #include <SoftwareSerial.h>
 #include <ArduinoBlue.h>
 
+const unsigned long BAUD_RATE = 9600;
+
 const int RED_PIN = 6;
 const int GREEN_PIN = 5;
 const int BLUE_PIN = 3;
@@ -34,14 +36,9 @@ void setLED(int pin, bool isOn, int value) {
 }
 
 void setup() {
-  // Start serial monitor at 9600 bps.
-    Serial.begin(9600);
-
-  // Start bluetooth serial at 9600 bps.
-  bluetooth.begin(9600);
-
-  // delay just in case bluetooth module needs time to "get ready".
-  delay(100);
+  // Start serial communciations.
+  Serial.begin(BAUD_RATE);
+  bluetooth.begin(BAUD_RATE);
 
   // Declare LED pins as output pins
   pinMode(RED_PIN, OUTPUT);
