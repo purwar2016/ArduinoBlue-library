@@ -1,8 +1,5 @@
 /*
-Name: ArduinoBlue.cpp
-Created: 6/28/2017 11:00:39 AM
 Author: Jae An
-Contact: jaean37@gmail.com
 */
 
 #include "ArduinoBlue.h"
