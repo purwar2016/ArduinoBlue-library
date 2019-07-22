@@ -1,6 +1,8 @@
 /*
 Name: ArduinoBlue.cpp
+Created: 6/28/2017 11:00:39 AM
 Author: Jae An
+Contact: jaean37@gmail.com
 */
 
 #include "ArduinoBlue.h"
@@ -213,7 +215,7 @@ String ArduinoBlue::readString() {
 
 void ArduinoBlue::pushToSignalArray(uint8_t elem) {
     if (elem < 0) {
-        Serial.print("neg");
+        // Serial.print("neg");
     }
     if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
         _signal[_signalLength] = elem;
