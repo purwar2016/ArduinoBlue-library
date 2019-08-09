@@ -37,6 +37,7 @@ void setLED(int pin, bool isOn, int value) {
 
 void setup() {
   // Start serial communciations.
+  // The baud rate must be the same for both serials.
   Serial.begin(BAUD_RATE);
   bluetooth.begin(BAUD_RATE);
 
