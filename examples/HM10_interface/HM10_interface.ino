@@ -1,5 +1,7 @@
 #include <SoftwareSerial.h>
 
+unsigned long BAUD_RATE = 9600;
+
 const int BLUETOOTH_TX = 8;
 const int BLUETOOTH_RX = 7;
 
@@ -10,9 +12,10 @@ unsigned long prevMillis;
 SoftwareSerial bluetooth(BLUETOOTH_TX, BLUETOOTH_RX);
 
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(115200);
-  bluetooth.begin(9600);
+  // Start serial communications.
+  // The baud rate must be the same for both the serial and the bluetooth.
+  Serial.begin(BAUD_RATE);
+  bluetooth.begin(BAUD_RATE);
   Serial.println("Setup Complete");
 }
 
