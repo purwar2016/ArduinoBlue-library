@@ -18,7 +18,8 @@ ArduinoBlue phone(Serial2);
 
 // Setup code runs once after program starts.
 void setup() {
-    // Start serial communications
+    // Start serial communications.
+    // The baud rate must be the same for both serials.
     Serial.begin(BAUD_RATE);
     Serial2.begin(BAUD_RATE);
     
