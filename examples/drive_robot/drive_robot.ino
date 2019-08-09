@@ -152,7 +152,8 @@ void doTesting() {
 
 void setup() {
 	delay(500);
-
+        // Start serial communications.
+        // The baud rate must be the same for both serials.
 	// Start communication with HM10 bluetooth module.
 	softSerial.begin(BAUD_RATE);
 
