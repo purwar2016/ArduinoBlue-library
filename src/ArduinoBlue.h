@@ -1,5 +1,4 @@
 /*
-Name: ArduinoBlue.h
 Author: Jae An
 */
 
@@ -43,17 +42,17 @@ public:
     int getSliderVal();
     int getThrottle();
     int getSteering();
-	float * getPathArrayX();
-	float * getPathArrayY();
-	float getPathY(float);
-	int getPathLength();
+    float * getPathArrayX();
+    float * getPathArrayY();
+    float getPathY(float);
+    int getPathLength();
     bool checkBluetooth();
     bool isConnected();
-	bool isPathAvailable();
+    bool isPathAvailable();
     void sendText(String msg);
     void sendMessage(String msg);
-	void sendLocation(float, float, float, float, float);
-	static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
+    void sendLocation(float, float, float, float, float);
+    static float bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4);
     String getText();
     void setInterruptToggle(functiontype attach, functiontype detach);
 private:
@@ -65,22 +64,22 @@ private:
     uint8_t _sliderVal = DEFAULT_VALUE;
     uint8_t _sliderId = DEFAULT_VALUE;
     uint8_t _button = DEFAULT_VALUE;
-	bool _pathAvailable = false;
+    bool _pathAvailable = false;
     String _text;
-	float * _pathX;
-	float * _pathY;
-	float _prevReturnXx;
-	int _pathLength;
+    float * _pathX;
+    float * _pathY;
+    float _prevReturnXx;
+    int _pathLength;
     void clearSignalArray();
     void pushToSignalArray(uint8_t elem);
     void storeShortTransmission();
-	bool storePathTransmission();
+    bool storePathTransmission();
     void processDriveTransmission();
     void processButtonTransmission();
     void processSliderTransmission();
     void processTextTransmission();
     void processPathTransmission();
-	void sendFloatAsBytes(float);
+    void sendFloatAsBytes(float);
     void attachInterrupts();
     void detachInterrupts();
     String readString();
