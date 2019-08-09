@@ -23,7 +23,8 @@ ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBl
 bool isLedOn = false;
 
 void setup() {
-    // Start serial communciations
+    // Start serial communications.
+    // The baud rate must be the same for both serials.
     Serial.begin(BAUD_RATE);
     bluetooth.begin(BAUD_RATE);
 
