@@ -1,6 +1,3 @@
-/*
-Author: Jae An
-*/
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
@@ -16,6 +13,7 @@ ArduinoBlue::ArduinoBlue(Stream &output) :
 {
 }
 
+// Checks for incoming bluetooth signal
 bool ArduinoBlue::checkBluetooth() {
 
     bool isDataRead = _bluetooth.available() > 0;
@@ -40,41 +38,58 @@ bool ArduinoBlue::checkBluetooth() {
         else if (intRead == PATH_TRANSMISSION) {
             processPathTransmission();
         }
-        else if (intRead == CONNECTION_CHECK) {
-            _bluetooth.print(CONNECTION_CHECK);
-        }
+        // else if (intRead == CONNECTION_CHECK) {
+        //     _bluetooth.print(CONNECTION_CHECK);
+        // }
     }
 
     return isDataRead;
 }
 
+// Process incoming throttle and steering data.
 void ArduinoBlue::processDriveTransmission() {
+    // Store the incoming throttle and steering values in the signal array.
     storeShortTransmission();
+
+    // Set the values from the signal array.
     _throttle = _signal[0];
     _steering = _signal[1];
+
     clearSignalArray();
 }
 
+// Process incoming button data.
 void ArduinoBlue::processButtonTransmission() {
+    // Store the button transmission in the signal array.
     storeShortTransmission();
+
+    // Set the values from the signal array.
     _button = _signal[0];
     clearSignalArray();
 }
 
+// Process incoming slider data.
 void ArduinoBlue::processSliderTransmission() {
+    // Store the slider transmission in the signal array.
     storeShortTransmission();
+
+    // Set the values from the signal array.
     _sliderId = _signal[0];
     _sliderVal = _signal[1];
+
     clearSignalArray();
 }
 
+// Process incoming text data.
 void ArduinoBlue::processTextTransmission() {
+    // Get the text transmission.
     _text = readString();
     clearSignalArray();
 }
 
-// TODO: Implement this.
+// Processing incoming path data.
 void ArduinoBlue::processPathTransmission() {
+    // 
     detachInterrupts();
 	_pathAvailable = storePathTransmission();
     _bluetooth.print((char)PATH_TRANSMISSION_CONFIRMATION);
@@ -84,8 +99,11 @@ void ArduinoBlue::processPathTransmission() {
     attachInterrupts();
 }
 
+// Send location data back to ArduinoBlue
 void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float xGoal, float yGoal) {
-	_bluetooth.print((char)LOCATION_TRANSMISSION_START);
+	_bluetooth.print((char)LOCATION_TRANSMISSION_START); // Send the location transmission start delimeter.
+
+    // Set the data as bytes in the following order.
 	sendFloatAsBytes((float)xPos);
 	sendFloatAsBytes((float)yPos);
 	sendFloatAsBytes((float)headingAngle);
@@ -93,7 +111,7 @@ void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float
 	sendFloatAsBytes((float)yGoal);
 }
 
-// TODO: May not be needed.
+// Send a float as four separate bytes.
 void ArduinoBlue::sendFloatAsBytes(float num) {
 	FLOATUNION_t floatUnion;
 	floatUnion.number = num;
@@ -103,6 +121,7 @@ void ArduinoBlue::sendFloatAsBytes(float num) {
 	_bluetooth.print((char)floatUnion.bytes[3]);
 }
 
+// Convert four bytes to float value.
 float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) {
 	FLOATUNION_t floatUntion;
 	floatUntion.bytes[0] = u1;
@@ -112,6 +131,7 @@ float ArduinoBlue::bytesToFloat(uint8_t u1, uint8_t u2, uint8_t u3, uint8_t u4) 
 	return floatUntion.number;
 }
 
+// Read and store the path transmission.
 bool ArduinoBlue::storePathTransmission() {
 	const int BYTES_PER_FLOAT = 4;
 
@@ -152,6 +172,7 @@ bool ArduinoBlue::storePathTransmission() {
 					int index = numbersRead / 2 - 1;
 					if (fabs(number) > PATH_OVERFLOW_VALUE) {
 						// If any value has overflowed and is invalid use the previous coordinate.
+                        // Overflowed means that it's junk data. Throw it away.
 						// TODO: Consider the case when the index is 0.
 						_pathX[index] = _pathX[index - 1];
 						_pathY[index] = _pathY[index - 1];
@@ -179,7 +200,7 @@ bool ArduinoBlue::storePathTransmission() {
 	return true;
 }
 
-// Stores short transmission into the signal array
+// Stores short transmission into an array. 
 void ArduinoBlue::storeShortTransmission() {
 	unsigned long prevMillis = millis();
 	uint8_t intRead;
@@ -192,6 +213,16 @@ void ArduinoBlue::storeShortTransmission() {
 	}
 }
 
+// Pushes element to signal array
+void ArduinoBlue::pushToSignalArray(uint8_t elem) {
+    if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
+        _signal[_signalLength] = elem;
+        _signalLength++;
+    }
+}
+
+// Read and store incoming characters until TRANMISSION_END character is read or until TEXT_TRANMISSION_TIMEOUT.
+// Return the characters read.
 String ArduinoBlue::readString() {
     String s;
     uint8_t intRead;
@@ -210,20 +241,7 @@ String ArduinoBlue::readString() {
     return s;
 }
 
-void ArduinoBlue::pushToSignalArray(uint8_t elem) {
-    if (elem < 0) {
-        // Serial.print("neg");
-    }
-    if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
-        _signal[_signalLength] = elem;
-        _signalLength++;
-    }
-    else {
-        // Serial.println("ArduinoBlue: Transmission error...");
-		// Serial.print("elem: "); Serial.println(elem);
-    }
-}
-
+// Clear the signal array.
 void ArduinoBlue::clearSignalArray() {
     for (uint8_t i = 0; i < _signalLength; i++) {
         _signal[i] = DEFAULT_VALUE;
@@ -231,12 +249,15 @@ void ArduinoBlue::clearSignalArray() {
     _signalLength = 0;
 }
 
+// Returns true if path data is available for use.
 bool ArduinoBlue::isPathAvailable() {
 	bool toReturn = _pathAvailable;
 	_pathAvailable = false;
 	return toReturn;
 }
 
+// Returns the ID of the button pressed.
+// Returns -1 if a button has not been pressed.
 int ArduinoBlue::getButton() {
     checkBluetooth();
     uint8_t btn = _button;
@@ -245,6 +266,8 @@ int ArduinoBlue::getButton() {
     return btn;
 }
 
+// Returns the slider ID of the slider touched.
+// Returns -1 if no slider was touched.
 int ArduinoBlue::getSliderId() {
     checkBluetooth();
     uint8_t id = _sliderId;
@@ -253,6 +276,7 @@ int ArduinoBlue::getSliderId() {
     return id;
 }
 
+// Returns the value of the latest slider touched.
 int ArduinoBlue::getSliderVal() {
     uint8_t val = _sliderVal;
     _sliderVal = DEFAULT_VALUE;
@@ -260,48 +284,40 @@ int ArduinoBlue::getSliderVal() {
     return val;
 }
 
+// Returns the throttle value of the joystick or tilt.
 int ArduinoBlue::getThrottle() {
     checkBluetooth();
     return _throttle;
 }
 
+// Returns the steering value of the joystick or tilt.
 int ArduinoBlue::getSteering() {
     checkBluetooth();
     return _steering;
 }
 
+// Returns the pointer to the x coordinates of path data.
 float * ArduinoBlue::getPathArrayX() {
 	return _pathX;
 }
 
+// Returns the pointer to the y coordinates of path data.
 float * ArduinoBlue::getPathArrayY() {
 	return _pathY;
 }
 
+// Returns the length of the path data.
 int ArduinoBlue::getPathLength() {
 	return _pathLength;
 	//return tempPathLength;
 }
 
+// Send text to ArduinoBlue to show as popup.
 void ArduinoBlue::sendText(String msg) {
     _bluetooth.print(((char)TEXT_SEND_TRANSMISSION) + msg + ((char)TRANSMISSION_END));
 }
 
-// for backwards compatibility
-void ArduinoBlue::sendMessage(String msg) {
-    sendText(msg);
-}
-
-bool ArduinoBlue::isConnected() {
-    _bluetooth.print(CONNECTION_CHECK);
-    // wait for 500 ms
-    delay(500);
-    if (_bluetooth.available()) {
-        return _bluetooth.read() == CONNECTION_CHECK;
-    }
-    return false;
-}
-
+// Returns the text that the user sent through the app.
 String ArduinoBlue::getText() {
     checkBluetooth();
     String ret = _text;
@@ -309,12 +325,17 @@ String ArduinoBlue::getText() {
     return ret;
 }
 
+// Sets pointer to the functions to detach and attach interrupts.
+// This is done so that interrupts will be disabled when path data is being read.
+// See storePathTransmission().
 void ArduinoBlue::setInterruptToggle(functiontype attach, functiontype detach)
 {
     _attachInterrupts = attach;
     _detachInterrupts = detach;
 }
 
+// Attach interrupts
+// See setInterruptToggle()
 void ArduinoBlue::attachInterrupts()
 {
     if (_attachInterrupts != nullptr)
@@ -323,6 +344,8 @@ void ArduinoBlue::attachInterrupts()
     }
 }
 
+// Detach interrupts
+// See setInterruptToggle()
 void ArduinoBlue::detachInterrupts()
 {
     if (_detachInterrupts != nullptr)
@@ -330,3 +353,13 @@ void ArduinoBlue::detachInterrupts()
         _detachInterrupts();
     }
 }
+
+// bool ArduinoBlue::isConnected() {
+//     _bluetooth.print(CONNECTION_CHECK);
+//     // wait for 500 ms
+//     delay(500);
+//     if (_bluetooth.available()) {
+//         return _bluetooth.read() == CONNECTION_CHECK;
+//     }
+//     return false;
+// }
