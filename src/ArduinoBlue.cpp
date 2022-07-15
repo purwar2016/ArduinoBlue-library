@@ -214,14 +214,6 @@ void ArduinoBlue::storeShortTransmission() {
 	}
 }
 
-// Pushes element to signal array
-void ArduinoBlue::pushToSignalArray(uint8_t elem) {
-    if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
-        _signal[_signalLength] = elem;
-        _signalLength++;
-    }
-}
-
 // Read and store incoming characters until TRANMISSION_END character is read or until TEXT_TRANMISSION_TIMEOUT.
 // Return the characters read.
 String ArduinoBlue::readString() {
