@@ -89,7 +89,7 @@ void loop() {
         Serial.write("send: ");
         String str = Serial.readString();
         phone.sendMessage(str);
-        phone.sendDisplayMessage(2, str);
+        phone.sendDisplayData(2, str);
         Serial.print(str);
         Serial.write('\n');
     }
