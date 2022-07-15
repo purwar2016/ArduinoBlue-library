@@ -1,3 +1,6 @@
+/*
+Author: Jae An and Rowan Nadon
+*/
 
 #include "ArduinoBlue.h"
 #include <Arduino.h>
@@ -38,9 +41,9 @@ bool ArduinoBlue::checkBluetooth() {
         else if (intRead == PATH_TRANSMISSION) {
             processPathTransmission();
         }
-        // else if (intRead == CONNECTION_CHECK) {
-        //     _bluetooth.print(CONNECTION_CHECK);
-        // }
+        else if (intRead == CONNECTION_CHECK) {
+            _bluetooth.print(CONNECTION_CHECK);
+        }
     }
 
     return isDataRead;
@@ -87,7 +90,7 @@ void ArduinoBlue::processTextTransmission() {
     clearSignalArray();
 }
 
-// Processing incoming path data.
+// TODO: Implement this.
 void ArduinoBlue::processPathTransmission() {
     // 
     detachInterrupts();
@@ -101,9 +104,7 @@ void ArduinoBlue::processPathTransmission() {
 
 // Send location data back to ArduinoBlue
 void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float xGoal, float yGoal) {
-	_bluetooth.print((char)LOCATION_TRANSMISSION_START); // Send the location transmission start delimeter.
-
-    // Set the data as bytes in the following order.
+	_bluetooth.print((char)LOCATION_TRANSMISSION_START);
 	sendFloatAsBytes((float)xPos);
 	sendFloatAsBytes((float)yPos);
 	sendFloatAsBytes((float)headingAngle);
@@ -111,7 +112,7 @@ void ArduinoBlue::sendLocation(float xPos, float yPos, float headingAngle, float
 	sendFloatAsBytes((float)yGoal);
 }
 
-// Send a float as four separate bytes.
+// TODO: May not be needed.
 void ArduinoBlue::sendFloatAsBytes(float num) {
 	FLOATUNION_t floatUnion;
 	floatUnion.number = num;
@@ -200,7 +201,7 @@ bool ArduinoBlue::storePathTransmission() {
 	return true;
 }
 
-// Stores short transmission into an array. 
+// Stores short transmission into the signal array
 void ArduinoBlue::storeShortTransmission() {
 	unsigned long prevMillis = millis();
 	uint8_t intRead;
@@ -241,7 +242,20 @@ String ArduinoBlue::readString() {
     return s;
 }
 
-// Clear the signal array.
+void ArduinoBlue::pushToSignalArray(uint8_t elem) {
+    if (elem < 0) {
+        // Serial.print("neg");
+    }
+    if ( !(_signalLength + 1 == MAX_SHORT_SIGNAL_LENGTH) ) {
+        _signal[_signalLength] = elem;
+        _signalLength++;
+    }
+    else {
+        // Serial.println("ArduinoBlue: Transmission error...");
+		// Serial.print("elem: "); Serial.println(elem);
+    }
+}
+
 void ArduinoBlue::clearSignalArray() {
     for (uint8_t i = 0; i < _signalLength; i++) {
         _signal[i] = DEFAULT_VALUE;
@@ -312,9 +326,32 @@ int ArduinoBlue::getPathLength() {
 	//return tempPathLength;
 }
 
-// Send text to ArduinoBlue to show as popup.
+// Send text to ArduinoBlue to show in the terminal component
 void ArduinoBlue::sendText(String msg) {
     _bluetooth.print(((char)TEXT_SEND_TRANSMISSION) + msg + ((char)TRANSMISSION_END));
+    _bluetooth.flush();
+}
+
+// Send text to ArduinoBlue to show in a display component
+void ArduinoBlue::sendDisplayData(uint8_t id, String msg) {
+    _bluetooth.print(((char)DISPLAY_SEND_TRANSMISSION) + (((char)id) + msg) + ((char)TRANSMISSION_END));
+    _bluetooth.flush();
+}
+
+// for backwards compatibility
+void ArduinoBlue::sendMessage(String msg) {
+    sendText(msg);
+}
+
+
+bool ArduinoBlue::isConnected() {
+    _bluetooth.print(CONNECTION_CHECK);
+    // wait for 500 ms
+    delay(500);
+    if (_bluetooth.available()) {
+        return _bluetooth.read() == CONNECTION_CHECK;
+    }
+    return false;
 }
 
 // Returns the text that the user sent through the app.
