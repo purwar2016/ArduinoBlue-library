@@ -16,25 +16,23 @@ Instructions:
 const unsigned long BAUD_RATE = 9600;
 
 // MOTOR LEFT PINS
-const int ENA = 11;
-const int IN1 = 25;
-const int IN2 = 24;
+const int ENA = 6;
+const int IN1 = 4;
+const int IN2 = 5;
 // MOTOR RIGHT PINS
-const int ENB = 12;
-const int IN3 = 22;
-const int IN4 = 23;
-
+const int ENB = 11;
+const int IN3 = 12;
+const int IN4 = 13;
 
 // MOTOR PARAMETERS
 // Minimum PWM value of analogWrite to spin motor when robot is on the ground.
 const int MINIMUM_MOTOR_SPEED = 65;
 
-
 // HM10 BLUETOOTH MODULE PINS
 // NOTE: Not all pins on your Arduino may support SoftwareSerial.
 // Please check: https://www.arduino.cc/en/Reference/softwareSerial
-const int BLUETOOTH_TX = 50;
-const int BLUETOOTH_RX = 51;
+const int BLUETOOTH_TX = 7;
+const int BLUETOOTH_RX = 8;
 
 SoftwareSerial softSerial(BLUETOOTH_TX, BLUETOOTH_RX); // Object for serial communication to HM 10 bluetooth module using ditigal pins.
 ArduinoBlue phone(softSerial); // Object for smartphone robot control.

@@ -6,9 +6,9 @@ const unsigned long BAUD_RATE = 9600;
 // The bluetooth tx and rx pins must be supported by software serial.
 // Visit https://www.arduino.cc/en/Reference/SoftwareSerial for unsupported pins.
 // Bluetooth TX -> Arduino D8
-const int BLUETOOTH_TX = 8;
+const int BLUETOOTH_TX = 7;
 // Bluetooth RX -> Arduino D7
-const int BLUETOOTH_RX = 7;
+const int BLUETOOTH_RX = 8;
 
 const int READ_TIME = 500;
 

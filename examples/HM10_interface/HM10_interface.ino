@@ -2,8 +2,8 @@
 
 unsigned long BAUD_RATE = 9600;
 
-const int BLUETOOTH_TX = 8;
-const int BLUETOOTH_RX = 7;
+const int BLUETOOTH_TX = 7;
+const int BLUETOOTH_RX = 8;
 
 const int READ_TIME = 500; //ms
 

@@ -7,16 +7,16 @@
 
 const unsigned long BAUD_RATE = 9600;
 
-const int RED_PIN = 13;
-const int GREEN_PIN = 12;
-const int BLUE_PIN = 4;
+const int RED_PIN = 6;
+const int GREEN_PIN = 5;
+const int BLUE_PIN = 3;
 
 // The bluetooth tx and rx pins must be supported by software serial.
 // Visit https://www.arduino.cc/en/Reference/SoftwareSerial for unsupported pins.
 // Bluetooth TX -> Arduino D8
 // Bluetooth RX -> Arduino D7
-const int BLUETOOTH_TX_PIN = 8;
-const int BLUETOOTH_RX_PIN = 7;
+const int BLUETOOTH_TX_PIN = 7;
+const int BLUETOOTH_RX_PIN = 8;
 
 SoftwareSerial bluetooth(BLUETOOTH_TX_PIN, BLUETOOTH_RX_PIN);
 ArduinoBlue phone(bluetooth); // pass reference of bluetooth object to ArduinoBlue constructor.
